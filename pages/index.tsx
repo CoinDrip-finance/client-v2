@@ -1,31 +1,46 @@
 import { useAuth } from '@elrond-giants/erd-react-hooks';
+import axios from 'axios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import useSWRInfinite from 'swr/infinite';
 
 import { fetchStreamNftsNonceList } from '../apis/nfts';
 import RequiresAuth from '../components/RequiresAuth';
 import { egldLabel } from '../config';
-import { useAppDispatch } from '../hooks/useStore';
 import { useTransaction } from '../hooks/useTransaction';
-import { fetchStreams } from '../redux/slices/streamsSlice';
-import { RootState } from '../redux/store';
+
+const fetcher = (url: string) => axios.get(url).then((res) => res.data);
+const PAGE_SIZE = 2;
+
+const encodeParams = (params: any) => new URLSearchParams(params).toString();
 
 import type { NextPage } from "next";
 const Home: NextPage = () => {
   const { address, logout, balance, nonce } = useAuth();
+  const [nonces, setNonces] = useState([]);
   const [receiverAddress, setReceiverAddress] = useState("");
   const [txData, setTxData] = useState("");
   const { makeTransaction } = useTransaction();
-  const dispatch = useAppDispatch();
-  const streamList = useSelector((state: RootState) => state.streams);
-  console.log(streamList);
+
+  const { data, mutate, size, setSize, isValidating, isLoading } = useSWRInfinite(
+    (index) =>
+      `/api/stream?${encodeParams({
+        address,
+        nfts: nonces,
+        page: index,
+        page_size: PAGE_SIZE,
+      })}`,
+    fetcher
+  );
+
+  console.log(data);
+
   useEffect(() => {
     if (!address) return;
 
     (async () => {
       const nonceList = await fetchStreamNftsNonceList(address);
-      dispatch(fetchStreams({ address, nfts: nonceList }));
+      setNonces(nonceList);
     })();
   }, [address]);
 
