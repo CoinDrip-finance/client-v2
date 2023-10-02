@@ -1,9 +1,15 @@
 import { useAuth } from '@elrond-giants/erd-react-hooks';
-import { useState } from 'react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
+import { fetchStreamNftsNonceList } from '../apis/nfts';
 import RequiresAuth from '../components/RequiresAuth';
 import { egldLabel } from '../config';
+import { useAppDispatch } from '../hooks/useStore';
 import { useTransaction } from '../hooks/useTransaction';
+import { fetchStreams } from '../redux/slices/streamsSlice';
+import { RootState } from '../redux/store';
 
 import type { NextPage } from "next";
 const Home: NextPage = () => {
@@ -11,18 +17,17 @@ const Home: NextPage = () => {
   const [receiverAddress, setReceiverAddress] = useState("");
   const [txData, setTxData] = useState("");
   const { makeTransaction } = useTransaction();
+  const dispatch = useAppDispatch();
+  const streamList = useSelector((state: RootState) => state.streams);
+  console.log(streamList);
+  useEffect(() => {
+    if (!address) return;
 
-  const sendTransaction = async () => {
-    const txResult = await makeTransaction({
-      receiver: receiverAddress,
-      data: txData,
-      value: 0.01,
-    });
-    setTxData("");
-    setReceiverAddress("");
-
-    console.log(txResult);
-  };
+    (async () => {
+      const nonceList = await fetchStreamNftsNonceList(address);
+      dispatch(fetchStreams({ address, nfts: nonceList }));
+    })();
+  }, [address]);
 
   return (
     <RequiresAuth>
@@ -41,6 +46,8 @@ const Home: NextPage = () => {
           >
             Logout
           </button>
+
+          <Link href="/new">create new stream</Link>
 
           <div className="pt-6 w-full">
             <p>Make a devnet test transaction</p>
@@ -74,17 +81,6 @@ const Home: NextPage = () => {
                   className="mt-1 p-2 w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border border-gray-300 rounded-md"
                 />
               </div>
-              <button
-                type="button"
-                className="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:cursor-not-allowed"
-                onClick={(event) => {
-                  event.preventDefault();
-                  sendTransaction();
-                }}
-                disabled={!receiverAddress}
-              >
-                Sign devnet transaction
-              </button>
             </form>
           </div>
         </div>
