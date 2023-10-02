@@ -56,13 +56,13 @@ const Home: NextPage = () => {
       payment_nonce: 0,
       payment_amount: 0.005,
       can_cancel: true,
-      duration: 600,
+      duration: 60 * 60,
     };
 
     const streamingContract = new StreamingContract(address);
     const interaction = streamingContract.createStreamByDuration(
       "erd1q2vrhd3hhcg7zfptvn3sgvnxhp7zvwqpvlqf03kzls04n0k573usc6t6w5",
-      632,
+      60 * 60,
       10,
       true,
       {

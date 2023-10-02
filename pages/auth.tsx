@@ -1,122 +1,114 @@
-import type {NextPage} from 'next'
-import {useEffect, useState} from "react";
-import {homePath} from "../utils/routes";
-import {useRouter} from "next/router";
-import WalletConnectLoginPopup from "../components/WalletConnectLoginPopup";
-import {useAuth} from "@elrond-giants/erd-react-hooks";
-import {AuthProviderType} from "@elrond-giants/erdjs-auth/dist/types";
-import * as config from "../config";
+import { useAuth } from '@elrond-giants/erd-react-hooks';
+import { AuthProviderType } from '@elrond-giants/erdjs-auth/dist/types';
+import { useRouter } from 'next/router';
 import QRCode from 'qrcode';
+import { useEffect, useState } from 'react';
 
+import WalletConnectLoginPopup from '../components/WalletConnectLoginPopup';
+import * as config from '../config';
+import { homePath } from '../utils/routes';
 
+import type { NextPage } from "next";
 const Auth: NextPage = () => {
-    const {authenticated, login, getLedgerAccounts} = useAuth();
-    const router = useRouter();
-    const [maiarAuthUri, setMaiarAuthUri] = useState('');
-    const [authQrCode, setAuthQrCode] = useState('');
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [showPopup, setShowPopup] = useState(false);
-    const [ledgerAccounts, setLedgerAccounts] = useState<string[]>([]);
+  const { authenticated, login, getLedgerAccounts } = useAuth();
+  const router = useRouter();
+  const [maiarAuthUri, setMaiarAuthUri] = useState("");
+  const [authQrCode, setAuthQrCode] = useState("");
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [ledgerAccounts, setLedgerAccounts] = useState<string[]>([]);
 
-    useEffect(() => {
-        setShowPopup(!!(authQrCode && isPopupOpen));
-    }, [authQrCode, isPopupOpen])
+  useEffect(() => {
+    setShowPopup(!!(authQrCode && isPopupOpen));
+  }, [authQrCode, isPopupOpen]);
 
-    useEffect(() => {
-        if (!authenticated) {
-            return;
-        }
-
-        (async () => {
-            await router.replace(homePath);
-        })();
-
-    }, [router, authenticated]);
-
-    const maiarClickHandler = async () => {
-        const uri = await login(AuthProviderType.WALLET_CONNECT);
-        const qrCode = await QRCode.toString(uri, {type: "svg"});
-        const authUri = `${config.walletConnectDeepLink}?wallet-connect=${encodeURIComponent(uri)}`;
-        setAuthQrCode(qrCode);
-        setMaiarAuthUri(authUri);
-        setIsPopupOpen(true);
-    };
-
-    const webClickHandler = async () => {
-        await login(AuthProviderType.WEBWALLET);
-    };
-
-    const extensionClickHandler = async () => {
-        await login(AuthProviderType.EXTENSION);
+  useEffect(() => {
+    if (!authenticated) {
+      return;
     }
 
-    const ledgerClickHandler = async () => {
-        const accounts = await getLedgerAccounts();
-        setLedgerAccounts(accounts);
-    }
+    (async () => {
+      await router.replace(homePath);
+    })();
+  }, [router, authenticated]);
 
-    const loginWithLedger = async (accountIndex: number) => {
-        await login(AuthProviderType.LEDGER, {ledgerAccountIndex: accountIndex});
-    }
+  const walletConnectClickHandler = async () => {
+    const uri = await login(AuthProviderType.WALLET_CONNECT);
+    const qrCode = await QRCode.toString(uri, { type: "svg" });
+    const authUri = `${config.walletConnectDeepLink}?wallet-connect=${encodeURIComponent(uri)}`;
+    setAuthQrCode(qrCode);
+    setMaiarAuthUri(authUri);
+    setIsPopupOpen(true);
+  };
 
-    return (
-        <>
-            <div className="flex flex-col items-center justify-center space-y-4 min-h-half-screen">
-                <h3 className="text-4xl">
-                    Connect your wallet
-                </h3>
-                <p className="text-2xl">Pick a login method</p>
-                <div className="flex items-center space-x-3">
-                    <button
-                        type="button"
-                        className="inline-flex items-center px-4 py-2 border-2 border-gray-600 text-base font-medium rounded-md shadow-sm text-gray-800 bg-blue-300 hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-300"
-                        onClick={maiarClickHandler}
-                    >
-                        xPortal
-                    </button>
-                    <button
-                        type="button"
-                        className="inline-flex items-center px-4 py-2 border-2 border-gray-600 text-base font-medium rounded-md shadow-sm text-gray-800 bg-yellow-300 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-300"
-                        onClick={webClickHandler}
-                    >
-                        Web Wallet
-                    </button>
-                    <button
-                        type="button"
-                        className="inline-flex items-center px-4 py-2 border-2 border-gray-600 text-base font-medium rounded-md shadow-sm text-gray-800 bg-green-300 hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-300"
-                        onClick={extensionClickHandler}
-                    >
-                        Extension
-                    </button>
-                    <button
-                        type="button"
-                        className="inline-flex items-center px-4 py-2 border-2 border-gray-600 text-base font-medium rounded-md shadow-sm text-gray-800 bg-orange-300 hover:bg-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-300"
-                        onClick={ledgerClickHandler}
-                    >
-                        Ledger
-                    </button>
-                </div>
-                {ledgerAccounts.length > 0 && <div className="flex items-center">
-                    <span>Select ledger account</span>
-                    <select
-                        className="m-10"
-                        onChange={(e) => loginWithLedger(parseInt(e.target.value))}
-                    >
-                        {ledgerAccounts.map((account, index) => (
-                            <option key={account} value={index}>{account}</option>
-                        ))}
-                    </select>
-                </div>
-                }
+  const webClickHandler = async () => {
+    await login(AuthProviderType.WEBWALLET);
+  };
+
+  const extensionClickHandler = async () => {
+    await login(AuthProviderType.EXTENSION);
+  };
+
+  const ledgerClickHandler = async () => {
+    const accounts = await getLedgerAccounts();
+    setLedgerAccounts(accounts);
+  };
+
+  const loginWithLedger = async (accountIndex: number) => {
+    await login(AuthProviderType.LEDGER, { ledgerAccountIndex: accountIndex });
+  };
+
+  return (
+    <>
+      <div className="flex sm:h-screen">
+        <div
+          className="flex-1 hidden sm:block bg-cover bg-center relative"
+          style={{
+            backgroundImage: "url(/auth/bg.jpg)",
+          }}
+        >
+          <div className="absolute top-0 left-0 w-full h-full bg-[black] opacity-50"></div>
+          <div className="absolute top-0 left-0 w-full h-full z-10 p-20 flex flex-col items-start justify-end space-y-10">
+            <img src="/logo.svg" alt="Giants" className="h-12" />
+
+            <p className="text-white font-medium text-4xl max-w-xl leading-tight">
+              The protocol for real-time payments
+            </p>
+          </div>
+        </div>
+        <div className="flex-1 flex items-center justify-center h-screen">
+          <div className="max-w-lg">
+            <img src="/logo.svg" alt="Giants" className="h-16 mx-auto mb-8 sm:hidden" />
+            <h1 className="text-white font-medium text-4xl mb-2 text-center">Connect your wallet</h1>
+            <p className="text-gray-400 font-light mb-10 text-center">Pick a login method to access CoinDrip</p>
+            <div className="flex flex-col max-w-xs mx-auto space-y-3 mb-24">
+              <button type="button" className="auth-button" onClick={walletConnectClickHandler}>
+                xPortal
+              </button>
+              <button type="button" className="auth-button" onClick={webClickHandler}>
+                Web Wallet
+              </button>
+              <button type="button" className="auth-button" onClick={extensionClickHandler}>
+                Extension
+              </button>
+              <p className="text-xs text-gray-400 text-center">* To use Ledger, please select Web Wallet.</p>
             </div>
-            <WalletConnectLoginPopup
-                qrCode={authQrCode}
-                uri={maiarAuthUri}
-                open={showPopup}
-                setOpen={setIsPopupOpen}
-            />
-        </>
-    );
-}
 
-export default Auth
+            <div>
+              <p className="text-xl font-semibold text-[#040932] text-center">New to MultiversX?</p>
+              <p className="text-gray-600 text-sm text-center">
+                Easily create your own MultiversX wallet using{" "}
+                <a href="https://maiar.com/" target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                  xPortal
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <WalletConnectLoginPopup qrCode={authQrCode} uri={maiarAuthUri} open={showPopup} setOpen={setIsPopupOpen} />
+    </>
+  );
+};
+
+export default Auth;
