@@ -95,10 +95,15 @@ const Auth: NextPage = () => {
             </div>
 
             <div>
-              <p className="text-xl font-semibold text-[#040932] text-center">New to MultiversX?</p>
-              <p className="text-gray-600 text-sm text-center">
+              <p className="text-white font-medium text-xl text-center">New to MultiversX?</p>
+              <p className="text-gray-400 font-light text-base text-center mt-2">
                 Easily create your own MultiversX wallet using{" "}
-                <a href="https://maiar.com/" target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                <a
+                  href="https://xportal.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[#00FFF2] hover:underline"
+                >
                   xPortal
                 </a>
               </p>
