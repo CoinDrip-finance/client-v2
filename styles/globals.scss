@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  body {
+    @apply bg-black;
+    @apply text-white;
+  }
+
+  .auth-button {
+    @apply bg-white;
+    @apply py-4;
+    @apply font-medium;
+    @apply rounded-lg;
+    @apply text-base;
+    @apply text-gray-900;
+  }
+
+  .primary-action-button {
+    @apply py-3 px-5;
+    @apply text-black;
+    @apply bg-gradient-to-bl from-primary to-[#B3F7F2];
+    @apply rounded-lg;
+    @apply font-medium text-sm;
+    &:hover {
+      @apply opacity-90;
+    }
+  }
+
+  .streams-table {
+    @apply border-separate border-spacing-y-1;
+    thead {
+      @apply bg-neutral-900;
+      tr {
+        th {
+          @apply py-3;
+          @apply font-normal;
+          @apply text-xs;
+          @apply text-neutral-500;
+          &:first-child {
+            @apply pl-6;
+            @apply rounded-l-lg;
+          }
+          &:last-child {
+            @apply rounded-r-lg;
+          }
+        }
+      }
+    }
+
+    tbody {
+      @apply bg-neutral-950;
+      tr {
+        td {
+          @apply py-5;
+          @apply font-light;
+          @apply text-sm;
+          &:first-child {
+            @apply pl-6;
+            @apply rounded-l-lg;
+          }
+          &:last-child {
+            @apply rounded-r-lg;
+          }
+          .secondary-text {
+            @apply text-xs;
+            @apply text-neutral-400;
+          }
+        }
+        &:hover {
+          @apply opacity-60;
+          @apply cursor-pointer;
+        }
+      }
+    }
+  }
+}

@@ -5,7 +5,15 @@ export interface CreateStreamPayment {
   decimals?: number;
 }
 
-export type StreamStatus = "active" | "finalized" | "cancelled";
+export type StreamResourceStatus = "active" | "finalized" | "cancelled";
+
+export enum StreamStatus {
+  Pending = "Pending",
+  InProgress = "In Progress",
+  Canceled = "Canceled",
+  Settled = "Settled",
+  Finished = "Finished",
+}
 
 export interface IStreamResource {
   id: number;
@@ -23,9 +31,12 @@ export interface IStreamResource {
   can_cancel: boolean;
   cliff: number;
   tx_hash: string;
-  status: StreamStatus;
+  status: StreamResourceStatus;
   decimals: number;
   payment_token_label: string;
+  canceled?: {
+    streamed_until_cancel: string;
+  };
 }
 
 export interface IClaimResource {

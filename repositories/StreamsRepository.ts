@@ -1,5 +1,5 @@
 import { IStreamResource } from '../types';
-import { getTableName, STREAMS_TABLE, supabase } from '../utils/supabase';
+import { CANCEL_TABLE, getTableName, STREAMS_TABLE, supabase } from '../utils/supabase';
 import { BaseRepository } from './BaseRepository';
 
 export class StreamsRepository extends BaseRepository<IStreamResource> {
@@ -21,13 +21,14 @@ export class StreamsRepository extends BaseRepository<IStreamResource> {
     }
 
     let query = this._table
-      .select("*", { count: "exact" })
+      .select(`*, canceled:${getTableName(CANCEL_TABLE)}(streamed_until_cancel)`, { count: "exact" })
       .or(filters.join(","))
-      .eq("status", "active")
+      // .eq("status", "active")
       .order("id", { ascending: false })
       .range(from, to);
 
     const { data, error, count } = await query;
+
     if (error) {
       throw error;
     }

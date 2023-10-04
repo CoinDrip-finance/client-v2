@@ -1,4 +1,4 @@
-import '../styles/globals.css';
+import '../styles/globals.scss';
 
 import { AuthContextProvider } from '@elrond-giants/erd-react-hooks';
 import { Poppins } from 'next/font/google';

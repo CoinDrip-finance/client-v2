@@ -9,7 +9,7 @@
     },
     "contractCrate": {
       "name": "coindrip",
-      "version": "1.0.1-beta"
+      "version": "2.0.0-beta"
     },
     "framework": {
       "name": "multiversx-sc",
@@ -219,6 +219,7 @@
       ],
       "name": "claimFromStreamAfterCancel",
       "mutability": "mutable",
+      "payableInTokens": ["*"],
       "inputs": [
         {
           "name": "stream_id",
@@ -331,6 +332,11 @@
           "indexed": true
         },
         {
+          "name": "deposit_with_fees",
+          "type": "BigUint",
+          "indexed": true
+        },
+        {
           "name": "start_time",
           "type": "u64",
           "indexed": true
@@ -364,11 +370,6 @@
           "name": "amount",
           "type": "BigUint",
           "indexed": true
-        },
-        {
-          "name": "finalized",
-          "type": "bool",
-          "indexed": true
         }
       ]
     },
@@ -388,6 +389,16 @@
         {
           "name": "claimed_amount",
           "type": "BigUint",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "finishedStream",
+      "inputs": [
+        {
+          "name": "stream_id",
+          "type": "u64",
           "indexed": true
         }
       ]
