@@ -6,7 +6,7 @@ import ApiResponse from './_base/ApiResponse';
 import BaseAction from './_base/BaseAction';
 
 export default class GetStreamsPaginatedAction extends BaseAction {
-  async handle(req: NextApiRequest): Promise<ApiResponse<IStreamResponse>> {
+  async handle(req: NextApiRequest): Promise<ApiResponse<IStreamResponse[]>> {
     // @ts-ignore
     const {
       address,
@@ -15,7 +15,11 @@ export default class GetStreamsPaginatedAction extends BaseAction {
       page_size,
     }: { address: string; nfts: string; page: string; page_size: string } = req.query;
 
-    console.log(address, _nfts, page);
+    if (!(address || _nfts)) {
+      return new ApiResponse({
+        body: [],
+      }).cache(60, 6);
+    }
 
     const nfts = _nfts ? _nfts.split(",").map((nft) => parseInt(nft)) : [];
 

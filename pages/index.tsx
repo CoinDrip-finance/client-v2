@@ -1,7 +1,7 @@
 import { useAuth } from '@elrond-giants/erd-react-hooks';
 import { PlusSmallIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useSWRInfinite from 'swr/infinite';
 
 import { fetchStreamNftsNonceList } from '../apis/nfts';
@@ -21,7 +21,7 @@ const encodeParams = (params: any) => new URLSearchParams(params).toString();
 const streamFilterOptions: DropdownItem[] = [
   { id: "all", label: "All Streams" },
   { id: "incoming", label: "Incoming" },
-  { id: "outcoming", label: "Outcoming" },
+  { id: "outgoing", label: "Outgoing" },
 ];
 
 import type { NextPage } from "next";
@@ -30,11 +30,30 @@ const Home: NextPage = () => {
   const [nonces, setNonces] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState(streamFilterOptions[0]);
 
+  const filterParams = useMemo(() => {
+    if (!address) return {};
+    if (selectedFilter.id === "all") {
+      return {
+        address,
+        nfts: nonces,
+      };
+    }
+    if (selectedFilter.id === "incoming") {
+      return {
+        nfts: nonces,
+      };
+    }
+    if (selectedFilter.id === "outgoing") {
+      return {
+        address,
+      };
+    }
+  }, [address, nonces, selectedFilter]);
+
   const { data, mutate, size, setSize, isValidating, isLoading } = useSWRInfinite<IStreamResource[]>(
     (index) =>
       `/api/stream?${encodeParams({
-        address,
-        nfts: nonces,
+        ...filterParams,
         page: index,
         page_size: PAGE_SIZE,
       })}`,
