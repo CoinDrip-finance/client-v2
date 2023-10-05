@@ -6,7 +6,7 @@ import { Fragment, useEffect, useMemo, useState } from 'react';
 
 import ContractAbi from '../../utils/coindrip.abi.json';
 import { classNames, getHerotag, getShortAddress } from '../../utils/presentation';
-import { authPath } from '../../utils/routes';
+import { authPath, homePath } from '../../utils/routes';
 import Logo from './Logo';
 
 interface IUser {
@@ -16,7 +16,7 @@ interface IUser {
 }
 
 const navigation: any[] = [
-  { name: "Dashboard", href: "/", current: true },
+  { name: "All Streams", href: "/", current: true },
   { name: "Feedback", href: "https://forms.gle/gXbBRHjk3PK6vsNi6" },
 ];
 const userNavigation: any[] = [];
@@ -64,7 +64,9 @@ export default function Layout({ children }: any) {
                   <div className="relative flex h-16 items-center justify-between ">
                     <div className="flex items-center px-2 lg:px-0">
                       <div className="flex-shrink-0">
-                        <Logo />
+                        <Link href={homePath}>
+                          <Logo />
+                        </Link>
                       </div>
                     </div>
                     <div className="flex lg:hidden">
@@ -204,7 +206,7 @@ export default function Layout({ children }: any) {
           </Disclosure>
         </div>
 
-        <main className="relative z-10">{children}</main>
+        <main className="relative z-20">{children}</main>
 
         <footer className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-28 bg-transparent font-light relative z-10">
           <ul className="flex items-center justify-center sm:space-x-8 text-sm text-white flex-col sm:flex-row space-y-4 sm:space-y-0">

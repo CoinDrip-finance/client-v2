@@ -34,7 +34,7 @@ export default function Dropdown({ items, selectedItem, onChange }: DropdownProp
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-lg bg-neutral-800 shadow-lg focus:outline-none">
+        <Menu.Items className="absolute left-4 z-10 mt-2 w-56 origin-top-right rounded-lg bg-neutral-800 shadow-lg focus:outline-none">
           <div className="py-1">
             {items.map((item) => (
               <Menu.Item key={item.id}>

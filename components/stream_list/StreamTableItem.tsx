@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 
 import { IStreamResource, StreamStatus } from '../../types';
 import { denominate } from '../../utils/economics';
-import { getShortAddress, getStreamStatus } from '../../utils/presentation';
+import { classNames, getShortAddress, getStreamStatus } from '../../utils/presentation';
 import { streamDetailsPath } from '../../utils/routes';
 import ProgressBarSmall from './ProgressBarSmall';
 
@@ -19,6 +19,21 @@ export default function StreamTableItem({ stream }: { stream: IStreamResource })
   const status = useMemo(() => {
     return getStreamStatus(stream);
   }, [stream]);
+
+  const statusColor = useMemo(() => {
+    switch (status) {
+      case StreamStatus.Pending:
+        return "bg-neutral-500";
+      case StreamStatus.InProgress:
+        return "bg-primary";
+      case StreamStatus.Settled:
+        return "bg-orange-400";
+      case StreamStatus.Canceled:
+        return "bg-red-500";
+      case StreamStatus.Finished:
+        return "bg-green-500";
+    }
+  }, [status]);
 
   const address = useMemo(() => {
     return getShortAddress(stream.sender, 8);
@@ -58,7 +73,10 @@ export default function StreamTableItem({ stream }: { stream: IStreamResource })
     <tr className="font-light" onClick={redirectToStreamDetails}>
       <td>
         <div className="secondary-text">#{stream.id}</div>
-        <div>{status}</div>
+        <div className="flex items-center">
+          <div className={classNames("w-2 h-2 rounded-full mr-2", statusColor)}></div>
+          {status}
+        </div>
       </td>
       <td>
         From <span className="font-medium">{address}</span>

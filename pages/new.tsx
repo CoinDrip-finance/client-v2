@@ -1,52 +1,58 @@
 import { useAuth } from '@elrond-giants/erd-react-hooks';
+import { AcademicCapIcon, InformationCircleIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
+import { StreamItemType } from '../components/gallery/StreamTypeItem';
+import AmountInput from '../components/new_stream/AmountInput';
+import DurationInput from '../components/new_stream/DurationInput';
+import RecipientInput from '../components/new_stream/RecipientInput';
+import TokenSelect, { EsdtToken } from '../components/new_stream/TokenSelect';
 import RequiresAuth from '../components/RequiresAuth';
+import BackButtonWrapper from '../components/shared/BackWrapper';
+import Layout from '../components/shared/Layout';
 import { useTransaction } from '../hooks/useTransaction';
+import { ICreateStream } from '../types';
 import StreamingContract from '../utils/contracts/streamContract';
+import { galleryPath } from '../utils/routes';
+import { streamTypes } from './gallery';
 
 import type { NextPage } from "next";
 const Home: NextPage = () => {
   const { address, logout, balance, nonce } = useAuth();
   const { makeTransaction } = useTransaction();
-
-  //   const createStream = async (stream: ICreateStream, decimals?: number) => {
-  //     const abiRegistry = AbiRegistry.create(CoinDripProtocolAbi);
-  //     const contract = new SmartContract({
-  //       address: new Address(contractAddress),
-  //       abi: abiRegistry,
-  //     });
-
-  //     let interaction = contract.methods
-  //       .createStreamDuration([
-  //         new AddressValue(new Address(stream.recipient)),
-  //         new U64Value(stream.duration),
-  //         new U64Value(0),
-  //         new BooleanValue(stream.can_cancel),
-  //       ])
-  //       .withChainID("D")
-  //       .withSender(new Address(address!))
-  //       .withGasLimit(150_000_000)
-  //       .withNonce(nonce);
-
-  //     if (stream.payment_token === "EGLD") {
-  //       interaction = interaction.withValue(TokenTransfer.egldFromAmount(stream.payment_amount));
-  //     } else {
-  //       interaction = interaction.withSingleESDTTransfer(
-  //         TokenTransfer.fungibleFromAmount(stream.payment_token, stream.payment_amount, decimals!)
-  //       );
-  //     }
-
-  //     const txResult = await makeTransaction(interaction.buildTransaction());
-  //   };
+  const router = useRouter();
+  const formMethods = useForm<ICreateStream>({
+    defaultValues: {
+      can_cancel: true,
+    },
+  });
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    getValues,
+    reset,
+    formState: { errors },
+  } = formMethods;
+  const [streamType, setStreamType] = useState<StreamItemType>();
+  const [selectedToken, setSelectedToken] = useState<EsdtToken>();
 
   useEffect(() => {
-    (async () => {
-      const streamingContract = new StreamingContract();
-      const stream = await streamingContract.getStream(4);
-      console.log(stream.firstValue?.valueOf());
-    })();
-  });
+    if (!router?.query?.type) return;
+
+    setStreamType(streamTypes.find((e) => e.id === router.query.type));
+  }, [router?.query?.type]);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     const streamingContract = new StreamingContract();
+  //     const stream = await streamingContract.getStream(4);
+  //     console.log(stream.firstValue?.valueOf());
+  //   })();
+  // });
 
   const test = async () => {
     if (!address) return;
@@ -67,7 +73,6 @@ const Home: NextPage = () => {
       true,
       {
         token_identifier: "EGLD",
-        token_nonce: 0,
         amount: 0.002,
       }
     );
@@ -91,14 +96,76 @@ const Home: NextPage = () => {
     const txResult = await makeTransaction(interaction.buildTransaction());
   };
 
+  const createStream = async (formData: ICreateStream) => {
+    if (!address) return;
+
+    const streamingContract = new StreamingContract(address);
+    const interaction = streamingContract.createStreamByDuration(
+      formData.recipient,
+      formData.duration,
+      0,
+      formData.can_cancel,
+      {
+        token_identifier: formData.payment_token,
+        amount: formData.amount,
+        decimals: selectedToken?.decimals,
+      }
+    );
+
+    const txResult = await makeTransaction(interaction.buildTransaction());
+  };
+
   return (
     <RequiresAuth>
-      <div className="flex justify-center w-full mt-20">
-        <div className="flex flex-col items-start space-y-2 max-w-screen-md">create new stream</div>
-        <button onClick={test}>create stream</button>
-        <button onClick={cancelTest}>cancel stream</button>
-        <button onClick={claimTest}>claim cancel stream</button>
-      </div>
+      <Layout>
+        <BackButtonWrapper href={galleryPath}>
+          <h1 className="font-medium text-xl">Create a stream</h1>
+          <p className="mt-2 mb-8 font-light text-sm">Start streaming your ESDT in minutes.</p>
+
+          <div className="flex flex-col space-y-4">
+            <div className="bg-neutral-950 rounded-lg border border-neutral-900 h-12 flex items-center justify-between px-4 text-neutral-400 font-medium text-sm">
+              <div className="flex items-center">
+                <LockClosedIcon className="w-4 h-4 mr-2" /> {streamType?.title} stream
+              </div>
+              <div>
+                <img src={`/gallery/${streamType?.id}.svg`} alt={streamType?.title} className="h-6" />
+              </div>
+            </div>
+
+            <FormProvider {...formMethods}>
+              <form className="flex flex-col space-y-4" onSubmit={handleSubmit(createStream)}>
+                <TokenSelect onSelect={(token) => setSelectedToken(token)} />
+
+                <AmountInput token={selectedToken} />
+
+                <RecipientInput />
+
+                <DurationInput />
+
+                <div className="font-light text-sm flex items-center">
+                  <input
+                    {...register("can_cancel")}
+                    type="checkbox"
+                    className="h-6 w-6 rounded border-neutral-500 text-primary focus:outline-none focus:ring-0 mr-2"
+                  />
+                  Make the stream cancelable
+                  {/* TODO: Repalce link to docs */}
+                  <a href="#">
+                    <InformationCircleIcon className="w-6 h-6 ml-2" />
+                  </a>
+                </div>
+
+                <button className="primary-action-button">Create Stream</button>
+              </form>
+            </FormProvider>
+          </div>
+
+          {/* TODO: Add a link to the docs */}
+          <a href="#" className="underline flex items-center text-sm font-light justify-center mt-12">
+            <AcademicCapIcon className="h-4 w-4 mr-2" /> Learn more about token streams
+          </a>
+        </BackButtonWrapper>
+      </Layout>
     </RequiresAuth>
   );
 };

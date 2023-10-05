@@ -6,6 +6,7 @@ import useSWRInfinite from 'swr/infinite';
 
 import { fetchStreamNftsNonceList } from '../apis/nfts';
 import Dropdown, { DropdownItem } from '../components/Dropdown';
+import InfoCard from '../components/InfoCard';
 import ActionButton from '../components/shared/ActionButton';
 import Layout from '../components/shared/Layout';
 import StreamsTable from '../components/stream_list/StreamsTable';
@@ -14,7 +15,7 @@ import { classNames } from '../utils/presentation';
 import { galleryPath } from '../utils/routes';
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 6;
 
 const encodeParams = (params: any) => new URLSearchParams(params).toString();
 
@@ -109,13 +110,17 @@ const Home: NextPage = () => {
               onClick={() => setSize(size + 1)}
               className={classNames(
                 !(isLoadingMore || isReachingEnd) ? "underline" : " text-neutral-400",
-                "mx-auto font-light pt-4"
+                "mx-auto font-light pt-2"
               )}
             >
               {isLoadingMore ? "Loading streams..." : isReachingEnd ? "No more streams" : "Load more"}
             </button>
           )}
         </div>
+      </div>
+
+      <div className="max-w-screen-lg mx-auto mt-16">
+        <InfoCard showButton={isEmpty} />
       </div>
     </Layout>
   );

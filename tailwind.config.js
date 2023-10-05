@@ -10,7 +10,10 @@ module.exports = {
       minHeight: () => ({
         "half-screen": "50vh",
       }),
+      maxWidth: {
+        "screen-xs": "580px",
+      },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/forms")],
 };

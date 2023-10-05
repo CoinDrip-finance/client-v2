@@ -2,10 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"] {
+    -webkit-appearance: none;
+    margin: 0;
+    -moz-appearance: textfield !important;
+  }
+}
+
 @layer components {
   body {
     @apply bg-black;
     @apply text-white;
+  }
+
+  input:focus {
+    @apply ring-0 #{!important};
   }
 
   .auth-button {
@@ -15,6 +29,9 @@
     @apply rounded-lg;
     @apply text-base;
     @apply text-gray-900;
+    &:hover {
+      @apply opacity-90;
+    }
   }
 
   .primary-action-button {

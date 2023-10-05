@@ -1,8 +1,22 @@
 export interface CreateStreamPayment {
   token_identifier: string;
-  token_nonce: number;
   amount: number;
   decimals?: number;
+}
+
+export interface ICreateStream {
+  amount: number;
+  duration: number;
+  payment_token: string;
+  recipient: string;
+  can_cancel: boolean;
+}
+
+export enum StreamType {
+  Linear = "linear",
+  CliffLinear = "cliff_linear",
+  Steps = "steps",
+  CliffSteps = "cliff_steps",
 }
 
 export type StreamResourceStatus = "active" | "finalized" | "cancelled";
