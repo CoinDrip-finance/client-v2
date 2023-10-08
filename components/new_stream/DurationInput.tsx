@@ -4,6 +4,11 @@ import { useFormContext } from 'react-hook-form';
 
 import DurationModal from './DurationModal';
 
+interface DurationInputProps {
+  label: string;
+  formId: string;
+}
+
 const formatDuration = (ms: number) => {
   if (ms < 0) ms = -ms;
   const time = {
@@ -19,7 +24,7 @@ const formatDuration = (ms: number) => {
     .join(", ");
 };
 
-export default function DurationInput() {
+export default function DurationInput({ label, formId }: DurationInputProps) {
   const { address, balance } = useAuth();
   const { setValue, register } = useFormContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,7 +33,7 @@ export default function DurationInput() {
   const onModalClose = (duration?: number) => {
     setIsModalOpen(false);
     if (duration) {
-      setValue("duration", duration);
+      setValue(formId, duration);
       setSelectedDuration(duration);
     } else {
       setSelectedDuration(null);
@@ -43,7 +48,7 @@ export default function DurationInput() {
 
   return (
     <div>
-      <div className="block font-light text-sm mb-2">Duration</div>
+      <div className="block font-light text-sm mb-2">{label}</div>
       <div className="relative w-full">
         <input
           type="text"

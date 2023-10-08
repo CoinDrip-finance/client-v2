@@ -15,17 +15,27 @@ export default function InfoCard({ showButton }: InfoCardProps) {
       <div className="text-light text-sm text-neutral-300">
         With Coindrip, on time means <span className="text-primary">every second.</span>
       </div>
-      {showButton && (
-        <ActionButton
-          Icon={PlusSmallIcon}
-          label="Start streaming"
-          href={galleryPath}
-          className="primary-action-button flex items-center py-2 mt-6"
-        />
-      )}
+      <div className="flex items-center space-x-6 mt-6">
+        {showButton && (
+          <ActionButton
+            Icon={PlusSmallIcon}
+            label="Start streaming"
+            href={galleryPath}
+            className="primary-action-button flex items-center py-2"
+          />
+        )}
+        <a
+          className="font-light text-neutral-400 hover:underline text-sm"
+          href="https://docs.coindrip.finance/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Learn more
+        </a>
+      </div>
       <img
         src="/card-hour-glass.svg"
-        className={classNames("right-10 bottom-0 absolute", showButton ? "h-40" : "h-32")}
+        className={classNames("right-10 bottom-0 absolute", showButton ? "h-40" : "h-36")}
       />
     </div>
   );

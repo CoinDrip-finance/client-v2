@@ -40,15 +40,14 @@ export default function StreamTableItem({ stream }: { stream: IStreamResource })
   }, [stream]);
 
   const amount = useMemo(() => {
-    console.log(stream);
     return denominate(stream.deposit, 4, stream.decimals).toString();
   }, [stream]);
 
   const streamedAmount = useMemo(() => {
     if (status === StreamStatus.Pending) return 0;
     if (status === StreamStatus.Settled) return 100;
-    const deposit = new BigNumber(stream.deposit);
     if (status === StreamStatus.Finished) {
+      const deposit = new BigNumber(stream.deposit);
       if (!stream.canceled) {
         return 100;
       } else {
@@ -62,7 +61,7 @@ export default function StreamTableItem({ stream }: { stream: IStreamResource })
 
     const duration = endDate.diff(startDate);
     const streamed = currentDate.diff(startDate);
-    return streamed / duration;
+    return (streamed * 100) / duration;
   }, [stream, status]);
 
   const redirectToStreamDetails = () => {

@@ -78,6 +78,9 @@ export default class GetStreamAction extends BaseAction {
       response.stream.balance = {
         claimed_amount,
       };
+      if (streamFromDb?.canceled?.streamed_until_cancel) {
+        response.stream.balance.recipient_balance = streamFromDb.canceled.streamed_until_cancel;
+      }
     }
 
     return new ApiResponse({

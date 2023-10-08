@@ -1,8 +1,10 @@
 import axios from 'axios';
+import BigNumber from 'bignumber.js';
 import moment from 'moment';
 
 import { network } from '../config';
 import { IStreamResource, IStreamResponse, StreamStatus } from '../types';
+import { denominate } from './economics';
 
 export function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -49,4 +51,60 @@ export const getStreamStatus = (stream: IStreamResource | IStreamResponse): Stre
   //@ts-ignore
   if (stream?.stream) return getStreamStatusDetails(stream as IStreamResponse);
   return getStreamStatusListing(stream as IStreamResource);
+};
+
+export const formatNumber = (num: number, precision = 2) => {
+  const map = [
+    { suffix: "T", threshold: 1e12 },
+    { suffix: "B", threshold: 1e9 },
+    { suffix: "M", threshold: 1e6 },
+    { suffix: "K", threshold: 1e3 },
+    { suffix: "", threshold: 1 },
+  ];
+
+  const found = map.find((x) => Math.abs(num) >= x.threshold);
+  if (found) {
+    const formatted = (num / found.threshold).toFixed(precision) + found.suffix;
+    return formatted;
+  }
+
+  return num;
+};
+
+export const getDepositAmount = (data: IStreamResponse): number => {
+  if (!data?.stream?.payment?.amount) return 0;
+  return denominate(data.stream.payment.amount, 5, data.stream.payment.token_decimals).toNumber();
+};
+
+export const getClaimedAmount = (data: IStreamResponse): { value: number; percent: string } => {
+  if (!data?.stream?.balance?.claimed_amount)
+    return {
+      value: 0,
+      percent: "0",
+    };
+  const balance = denominate(data.stream.balance.claimed_amount, 5, data.stream.payment.token_decimals).toNumber();
+  const fullDeposit = getDepositAmount(data);
+  return {
+    value: balance,
+    percent: ((balance * 100) / fullDeposit).toFixed(0),
+  };
+};
+
+export const getAmountStreamed = (data: IStreamResponse): { value: number; percent: string } => {
+  console.log(data);
+  if (!(data?.stream?.balance?.recipient_balance || data?.stream?.balance?.claimed_amount))
+    return {
+      value: 0,
+      percent: "0",
+    };
+
+  const streamed = new BigNumber(data?.stream?.balance?.recipient_balance || 0).plus(
+    new BigNumber(data?.stream?.balance?.claimed_amount || 0)
+  );
+  const balance = denominate(streamed.toString(), 5, data.stream.payment.token_decimals).toNumber();
+  const fullDeposit = getDepositAmount(data);
+  return {
+    value: balance,
+    percent: ((balance * 100) / fullDeposit).toFixed(0),
+  };
 };

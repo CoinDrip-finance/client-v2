@@ -1,7 +1,9 @@
 import { useAuth } from '@elrond-giants/erd-react-hooks';
 import { AcademicCapIcon, InformationCircleIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { joiResolver } from '@hookform/resolvers/joi';
+import Joi from 'joi';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { StreamItemType } from '../components/gallery/StreamTypeItem';
@@ -13,7 +15,7 @@ import RequiresAuth from '../components/RequiresAuth';
 import BackButtonWrapper from '../components/shared/BackWrapper';
 import Layout from '../components/shared/Layout';
 import { useTransaction } from '../hooks/useTransaction';
-import { ICreateStream } from '../types';
+import { ICreateStream, StreamType } from '../types';
 import StreamingContract from '../utils/contracts/streamContract';
 import { galleryPath } from '../utils/routes';
 import { streamTypes } from './gallery';
@@ -23,7 +25,27 @@ const Home: NextPage = () => {
   const { address, logout, balance, nonce } = useAuth();
   const { makeTransaction } = useTransaction();
   const router = useRouter();
+
+  const schema = Joi.object<ICreateStream>({
+    recipient: Joi.string()
+      .pattern(/^erd1[a-z0-9]{58}/)
+      .custom((data, helper) => {
+        // @ts-ignore
+        if (data === address) return helper.message("You can't stream towards yourself");
+
+        return data;
+      })
+      .required(),
+    payment_token: Joi.string()
+      .pattern(/[A-Z]+(-[a-z0-9]+)?/)
+      .required(),
+    amount: Joi.number().positive().required(),
+    duration: Joi.number().positive().required(),
+    cliff: Joi.number().positive().max(Joi.ref("duration")),
+    can_cancel: Joi.boolean(),
+  });
   const formMethods = useForm<ICreateStream>({
+    resolver: joiResolver(schema),
     defaultValues: {
       can_cancel: true,
     },
@@ -37,8 +59,10 @@ const Home: NextPage = () => {
     reset,
     formState: { errors },
   } = formMethods;
+
   const [streamType, setStreamType] = useState<StreamItemType>();
   const [selectedToken, setSelectedToken] = useState<EsdtToken>();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!router?.query?.type) return;
@@ -53,32 +77,6 @@ const Home: NextPage = () => {
   //     console.log(stream.firstValue?.valueOf());
   //   })();
   // });
-
-  const test = async () => {
-    if (!address) return;
-    const stream = {
-      recipient: "erd1q2vrhd3hhcg7zfptvn3sgvnxhp7zvwqpvlqf03kzls04n0k573usc6t6w5",
-      payment_token: "EGLD",
-      payment_nonce: 0,
-      payment_amount: 0.005,
-      can_cancel: true,
-      duration: 60 * 60,
-    };
-
-    const streamingContract = new StreamingContract(address);
-    const interaction = streamingContract.createStreamByDuration(
-      "erd1q2vrhd3hhcg7zfptvn3sgvnxhp7zvwqpvlqf03kzls04n0k573usc6t6w5",
-      60 * 60,
-      10,
-      true,
-      {
-        token_identifier: "EGLD",
-        amount: 0.002,
-      }
-    );
-
-    const txResult = await makeTransaction(interaction.buildTransaction());
-  };
 
   const cancelTest = async () => {
     if (!address) return;
@@ -99,21 +97,31 @@ const Home: NextPage = () => {
   const createStream = async (formData: ICreateStream) => {
     if (!address) return;
 
-    const streamingContract = new StreamingContract(address);
-    const interaction = streamingContract.createStreamByDuration(
-      formData.recipient,
-      formData.duration,
-      0,
-      formData.can_cancel,
-      {
-        token_identifier: formData.payment_token,
-        amount: formData.amount,
-        decimals: selectedToken?.decimals,
-      }
-    );
+    try {
+      setLoading(true);
 
-    const txResult = await makeTransaction(interaction.buildTransaction());
+      const streamingContract = new StreamingContract(address);
+      const interaction = streamingContract.createStreamByDuration(
+        formData.recipient,
+        formData.duration,
+        formData?.cliff || 0,
+        formData.can_cancel,
+        {
+          token_identifier: formData.payment_token,
+          amount: formData.amount,
+          decimals: selectedToken?.decimals,
+        }
+      );
+
+      const txResult = await makeTransaction(interaction.buildTransaction());
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const isCliffType = useMemo(() => {
+    return streamType?.id === StreamType.CliffLinear;
+  }, [streamType?.id]);
 
   return (
     <RequiresAuth>
@@ -140,7 +148,9 @@ const Home: NextPage = () => {
 
                 <RecipientInput />
 
-                <DurationInput />
+                <DurationInput label="Duration" formId="duration" />
+
+                {isCliffType && <DurationInput label="Cliff" formId="cliff" />}
 
                 <div className="font-light text-sm flex items-center">
                   <input
@@ -155,7 +165,12 @@ const Home: NextPage = () => {
                   </a>
                 </div>
 
-                <button className="primary-action-button">Create Stream</button>
+                <button
+                  className="primary-action-button disabled:cursor-not-allowed disabled:opacity-70"
+                  disabled={loading}
+                >
+                  {loading ? "Loading..." : "Create Stream"}
+                </button>
               </form>
             </FormProvider>
           </div>

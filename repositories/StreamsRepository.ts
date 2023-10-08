@@ -1,3 +1,5 @@
+import { PostgrestSingleResponse } from '@supabase/supabase-js';
+
 import { IStreamResource } from '../types';
 import { CANCEL_TABLE, getTableName, STREAMS_TABLE, supabase } from '../utils/supabase';
 import { BaseRepository } from './BaseRepository';
@@ -34,5 +36,14 @@ export class StreamsRepository extends BaseRepository<IStreamResource> {
     }
 
     return { data, count };
+  }
+
+  findById(id: string): PromiseLike<PostgrestSingleResponse<any>> {
+    if (!this._idField) throw new Error("Unique ID not provided.");
+
+    return this._table
+      .select(`*, canceled:${getTableName(CANCEL_TABLE)}(streamed_until_cancel)`)
+      .eq(this._idField, id)
+      .single();
   }
 }

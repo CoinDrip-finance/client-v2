@@ -10,6 +10,7 @@ export interface ICreateStream {
   payment_token: string;
   recipient: string;
   can_cancel: boolean;
+  cliff?: number;
 }
 
 export enum StreamType {

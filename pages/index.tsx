@@ -67,8 +67,6 @@ const Home: NextPage = () => {
   const isReachingEnd = isEmpty || (data && data[data.length - 1]?.length < PAGE_SIZE);
   const isRefreshing = isValidating && data && data.length === size;
 
-  console.log(streams, isLoadingMore, isEmpty, isReachingEnd, isRefreshing);
-
   useEffect(() => {
     if (!address) return;
 
