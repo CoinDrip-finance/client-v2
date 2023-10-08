@@ -91,7 +91,6 @@ export const getClaimedAmount = (data: IStreamResponse): { value: number; percen
 };
 
 export const getAmountStreamed = (data: IStreamResponse): { value: number; percent: string } => {
-  console.log(data);
   if (!(data?.stream?.balance?.recipient_balance || data?.stream?.balance?.claimed_amount))
     return {
       value: 0,

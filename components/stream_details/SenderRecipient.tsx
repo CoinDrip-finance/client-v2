@@ -7,14 +7,17 @@ import { IStreamResponse, StreamStatus } from '../../types';
 import { getShortAddress, getStreamStatus } from '../../utils/presentation';
 
 export default function SenderRecipientDetails({ data }: { data: IStreamResponse }) {
-  const [recipient, setRecipient] = useState("");
+  const [recipient, setRecipient] = useState("Loading recipient...");
+
+  const [senderUsername, setSenderUsername] = useState();
+  const [recipientUsername, setRecipientUsername] = useState();
 
   useEffect(() => {
     if (!data) return;
     (async () => {
       const streamStatus = await getStreamStatus(data);
       if (streamStatus === StreamStatus.Finished || streamStatus === StreamStatus.Canceled) {
-        setRecipient(`Stream ${streamStatus}`);
+        setRecipient(data.stream.last_claim_by || `Stream ${streamStatus}`);
       } else {
         const {
           data: { owner },
@@ -22,7 +25,22 @@ export default function SenderRecipientDetails({ data }: { data: IStreamResponse
         setRecipient(owner);
       }
     })();
-  }, [data]);
+  }, [data?.id]);
+
+  useEffect(() => {
+    (async () => {
+      const { data: account } = await axios.get(`${network.apiAddress}/accounts/${data.stream.sender}`);
+      setSenderUsername(account?.username?.replace(".elrond", ""));
+    })();
+  }, [data?.stream?.sender]);
+
+  useEffect(() => {
+    if (!recipient?.startsWith("erd1")) return;
+    (async () => {
+      const { data: account } = await axios.get(`${network.apiAddress}/accounts/${recipient}`);
+      setRecipientUsername(account?.username?.replace(".elrond", ""));
+    })();
+  }, [recipient]);
 
   return (
     <div className="mt-12 flex items-center relative">
@@ -35,7 +53,8 @@ export default function SenderRecipientDetails({ data }: { data: IStreamResponse
             rel="noreferrer"
             className="hover:underline inline-flex items-center"
           >
-            {getShortAddress(data?.stream?.sender || "", 6)} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-2" />
+            {senderUsername ? `@${senderUsername}` : getShortAddress(data?.stream?.sender || "", 6)}{" "}
+            <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-2" />
           </a>
         </div>
       </div>
@@ -45,14 +64,15 @@ export default function SenderRecipientDetails({ data }: { data: IStreamResponse
       <div className="flex-1 text-neutral-400 ml-32">
         <div className="mb-1">Recipient</div>
         <div className="bg-neutral-900 rounded-lg border border-neutral-800 px-4 py-2">
-          {recipient.startsWith("erd1") ? (
+          {recipient?.startsWith("erd1") ? (
             <a
               href={`${network.explorerAddress}/accounts/${recipient}`}
               target="_blank"
               rel="noreferrer"
               className="hover:underline inline-flex items-center"
             >
-              {getShortAddress(recipient, 6)} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-2" />
+              {recipientUsername ? `@${recipientUsername}` : getShortAddress(recipient, 6)}{" "}
+              <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-2" />
             </a>
           ) : (
             <>{recipient}</>

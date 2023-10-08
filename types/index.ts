@@ -68,6 +68,7 @@ export interface IStreamResponse {
   tx_hash: string;
   stream: {
     sender: string;
+    last_claim_by?: string;
     payment: {
       token_identifier: string;
       token_name: string;

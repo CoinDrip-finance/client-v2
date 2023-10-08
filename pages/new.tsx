@@ -17,7 +17,7 @@ import Layout from '../components/shared/Layout';
 import { useTransaction } from '../hooks/useTransaction';
 import { ICreateStream, StreamType } from '../types';
 import StreamingContract from '../utils/contracts/streamContract';
-import { galleryPath } from '../utils/routes';
+import { galleryPath, streamDetailsPath } from '../utils/routes';
 import { streamTypes } from './gallery';
 
 import type { NextPage } from "next";
@@ -70,30 +70,6 @@ const Home: NextPage = () => {
     setStreamType(streamTypes.find((e) => e.id === router.query.type));
   }, [router?.query?.type]);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const streamingContract = new StreamingContract();
-  //     const stream = await streamingContract.getStream(4);
-  //     console.log(stream.firstValue?.valueOf());
-  //   })();
-  // });
-
-  const cancelTest = async () => {
-    if (!address) return;
-    const streamingContract = new StreamingContract(address);
-    const interaction = streamingContract.cancelStream(11);
-
-    const txResult = await makeTransaction(interaction.buildTransaction());
-  };
-
-  const claimTest = async () => {
-    if (!address) return;
-    const streamingContract = new StreamingContract(address);
-    const interaction = streamingContract.claimAfterCancel(11, true);
-
-    const txResult = await makeTransaction(interaction.buildTransaction());
-  };
-
   const createStream = async (formData: ICreateStream) => {
     if (!address) return;
 
@@ -114,6 +90,17 @@ const Home: NextPage = () => {
       );
 
       const txResult = await makeTransaction(interaction.buildTransaction());
+
+      if (txResult.status === "success") {
+        const resultData =
+          txResult.transaction?.contractResults.items[
+            txResult.transaction?.contractResults.items.length - 1
+          ].data.split("@");
+        if (resultData) {
+          const streamId = parseInt(resultData[resultData?.length - 1], 16);
+          router.push(streamDetailsPath(streamId));
+        }
+      }
     } finally {
       setLoading(false);
     }

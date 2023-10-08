@@ -54,6 +54,10 @@
     &:hover {
       @apply bg-neutral-600 bg-opacity-5;
     }
+    &:disabled {
+      @apply cursor-not-allowed;
+      @apply text-neutral-400 border-neutral-400;
+    }
   }
 
   .streams-table {

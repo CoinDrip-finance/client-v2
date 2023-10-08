@@ -39,6 +39,7 @@ export default class GetStreamAction extends BaseAction {
       tx_hash: streamFromDb?.tx_hash!,
       stream: {
         sender: streamFromDb?.sender!,
+        last_claim_by: claims?.[0]?.recipient,
         payment: {
           token_identifier: streamFromDb?.payment_token!,
           token_name: streamFromDb?.payment_token_label!,
@@ -55,7 +56,17 @@ export default class GetStreamAction extends BaseAction {
     };
 
     if (streamFromDb?.status !== "finalized") {
-      const streamNftData = await getStreamNft(streamFromDb?.stream_nft_nonce as number);
+      try {
+        const streamNftData = await getStreamNft(streamFromDb?.stream_nft_nonce as number);
+
+        response.nft = {
+          collection: streamFromDb?.stream_nft_identifier!,
+          nonce: streamFromDb?.stream_nft_nonce!,
+          identifier: streamNftData.identifier,
+          name: streamNftData.name,
+          url: streamNftData.url,
+        };
+      } catch (e) {}
 
       const streamContract = new StreamingContract();
       const streamFromSc = await streamContract.getStream(streamFromDb?.id as number);
@@ -65,14 +76,6 @@ export default class GetStreamAction extends BaseAction {
         claimed_amount: streamFromSc.claimed_amount,
         balances_after_cancel: streamFromSc.balances_after_cancel,
         recipient_balance: streamFromSc?.balances_after_cancel?.recipient_balance || recipientBalance,
-      };
-
-      response.nft = {
-        collection: streamFromDb?.stream_nft_identifier!,
-        nonce: streamFromDb?.stream_nft_nonce!,
-        identifier: streamNftData.identifier,
-        name: streamNftData.name,
-        url: streamNftData.url,
       };
     } else {
       response.stream.balance = {
