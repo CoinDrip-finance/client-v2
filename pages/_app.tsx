@@ -1,6 +1,7 @@
 import '../styles/globals.scss';
 
 import { AuthContextProvider } from '@elrond-giants/erd-react-hooks';
+import { DefaultSeo } from 'next-seo';
 import { Poppins } from 'next/font/google';
 import { Provider as ReduxProvider } from 'react-redux';
 
@@ -16,17 +17,20 @@ const poppinsFont = Poppins({
 import type { AppProps } from "next/app";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ReduxProvider store={store}>
-      <AuthContextProvider
-        env={process.env.NODE_ENV === "production" ? "mainnet" : "devnet"}
-        projectId={process.env.NEXT_PUBLIC_WALLET_CONNECT_ID}
-      >
-        <div className={poppinsFont.className}>
-          <Component {...pageProps} />
-          <Notifications />
-        </div>
-      </AuthContextProvider>
-    </ReduxProvider>
+    <>
+      <DefaultSeo titleTemplate="%s | Coindrip" defaultTitle="Coindrip" />
+      <ReduxProvider store={store}>
+        <AuthContextProvider
+          env={process.env.NODE_ENV === "production" ? "mainnet" : "devnet"}
+          projectId={process.env.NEXT_PUBLIC_WALLET_CONNECT_ID}
+        >
+          <div className={poppinsFont.className}>
+            <Component {...pageProps} />
+            <Notifications />
+          </div>
+        </AuthContextProvider>
+      </ReduxProvider>
+    </>
   );
 }
 

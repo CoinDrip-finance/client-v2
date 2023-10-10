@@ -9,6 +9,7 @@ export interface StreamItemType {
   id: StreamType;
   title: string;
   description: string;
+  locked?: boolean;
 }
 
 export default function StreamTypeItem({ item }: { item: StreamItemType }) {
@@ -19,15 +20,24 @@ export default function StreamTypeItem({ item }: { item: StreamItemType }) {
       <div className="flex flex-col">
         <div className="font-medium text-lg mb-1">{item.title}</div>
         <div className="font-light text-sm mb-6">{item.description}</div>
-        {authenticated ? (
+        {item.locked ? (
+          <button className="flex auth-button py-1 font-sm w-40 justify-center items-center text-white bg-neutral-700 cursor-not-allowed">
+            <LockClosedIcon className="h-4 w-4 mr-2" />
+            Coming soon
+          </button>
+        ) : authenticated ? (
           <Link href={newStreamPath(item.id)}>
             <button className="auth-button py-1 font-sm w-40">Pick this</button>
           </Link>
         ) : (
           <Link href={authPath}>
-            <button className="auth-button py-1 font-sm px-4 flex items-center">
+            <button className="hidden sm:flex auth-button py-1 font-sm px-4 items-center">
               <LockClosedIcon className="h-4 w-4 mr-2" />
               Connect to stream
+            </button>
+            <button className="sm:hidden auth-button py-1 font-sm px-4 flex items-center">
+              <LockClosedIcon className="h-4 w-4 mr-2" />
+              Connect
             </button>
           </Link>
         )}

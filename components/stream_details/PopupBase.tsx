@@ -4,11 +4,11 @@ import { Fragment, useEffect, useMemo, useState } from 'react';
 interface StreamDetailsBasePopupProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit?: () => void;
   children: any;
   title: string;
-  hideSubmitButton: boolean;
-  submitButtonLabel: string;
+  hideSubmitButton?: boolean;
+  submitButtonLabel?: string;
 }
 
 export default function StreamDetailsBasePopup({
@@ -58,14 +58,16 @@ export default function StreamDetailsBasePopup({
                     Cancel
                   </button>
 
-                  <button
-                    type="button"
-                    className="auth-button py-2 px-6 disabled:cursor-not-allowed disabled:bg-neutral-500"
-                    onClick={onSubmit}
-                    disabled={hideSubmitButton}
-                  >
-                    {submitButtonLabel}
-                  </button>
+                  {onSubmit && (
+                    <button
+                      type="button"
+                      className="auth-button py-2 px-6 disabled:cursor-not-allowed disabled:bg-neutral-500"
+                      onClick={onSubmit}
+                      disabled={hideSubmitButton}
+                    >
+                      {submitButtonLabel}
+                    </button>
+                  )}
                 </div>
               </Dialog.Panel>
             </Transition.Child>

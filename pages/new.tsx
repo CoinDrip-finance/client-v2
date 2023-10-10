@@ -2,6 +2,7 @@ import { useAuth } from '@elrond-giants/erd-react-hooks';
 import { AcademicCapIcon, InformationCircleIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { joiResolver } from '@hookform/resolvers/joi';
 import Joi from 'joi';
+import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -113,6 +114,7 @@ const Home: NextPage = () => {
   return (
     <RequiresAuth>
       <Layout>
+        <NextSeo title="Create stream" />
         <BackButtonWrapper href={galleryPath}>
           <h1 className="font-medium text-xl">Create a stream</h1>
           <p className="mt-2 mb-8 font-light text-sm">Start streaming your ESDT in minutes.</p>

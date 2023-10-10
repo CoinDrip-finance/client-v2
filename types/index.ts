@@ -17,7 +17,8 @@ export enum StreamType {
   Linear = "linear",
   CliffLinear = "cliff_linear",
   Steps = "steps",
-  CliffSteps = "cliff_steps",
+  Exponential = "exponential",
+  CliffExponential = "cliff_exponential",
 }
 
 export type StreamResourceStatus = "active" | "finalized" | "cancelled";

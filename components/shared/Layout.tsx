@@ -62,7 +62,7 @@ export default function Layout({ children }: any) {
               <>
                 <div className="mx-auto max-w-6xl px-4 sm:px-4 lg:px-8">
                   <div className="relative flex h-16 items-center justify-between ">
-                    <div className="flex items-center px-2 lg:px-0">
+                    <div className="flex items-center">
                       <div className="flex-shrink-0">
                         <Link href={homePath}>
                           <Logo />
@@ -72,7 +72,7 @@ export default function Layout({ children }: any) {
                     <div className="flex lg:hidden">
                       {/* Mobile menu button */}
                       {address ? (
-                        <Disclosure.Button className="inline-flex items-center justify-center p-2 text-white focus:outline-none">
+                        <Disclosure.Button className="inline-flex items-center justify-center sm:p-2 text-white focus:outline-none">
                           <span className="sr-only">Open main menu</span>
                           <div
                             className={classNames(
@@ -87,7 +87,7 @@ export default function Layout({ children }: any) {
                         </Disclosure.Button>
                       ) : (
                         <span className="border border-white rounded-lg text-sm text-white py-1.5 px-3 font-medium">
-                          <Link href={authPath}>Connect Wallet</Link>
+                          <Link href={authPath}>Connect</Link>
                         </span>
                       )}
                     </div>
@@ -165,7 +165,7 @@ export default function Layout({ children }: any) {
                   </div>
                 </div>
 
-                <Disclosure.Panel className="lg:hidden bg-black bg-opacity-40 mx-6 rounded-md mt-2">
+                <Disclosure.Panel className="lg:hidden bg-neutral-950 border border-neutral-900 bg-opacity-40 mx-6 rounded-md mt-2">
                   <div className="space-y-1 px-2 pt-2 pb-3">
                     {navigation.map((item) => (
                       <Link key={item.name} href={item.href}>
@@ -206,10 +206,10 @@ export default function Layout({ children }: any) {
           </Disclosure>
         </div>
 
-        <main className="relative z-20">{children}</main>
+        <main className="relative z-20 px-4 lg:px-8">{children}</main>
 
         <footer className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-28 bg-transparent font-light relative z-10">
-          <ul className="flex items-center justify-center sm:space-x-8 text-sm text-white flex-col sm:flex-row space-y-4 sm:space-y-0">
+          <ul className="flex items-center justify-center sm:space-x-8 text-sm text-white flex-wrap space-x-8 space-y-2 sm:space-y-0">
             <li>
               <a href="https://coindrip.finance/" target="_blank" rel="noreferrer" className="hover:underline">
                 Website
@@ -241,13 +241,22 @@ export default function Layout({ children }: any) {
               </a>
             </li>
           </ul>
-          <ul className="flex items-center justify-center sm:space-x-8 text-xs mt-4 text-slate-200 flex-col sm:flex-row space-y-4 sm:space-y-0 font-light">
+          <ul className="flex items-center justify-center sm:space-x-8 text-xs mt-8 text-slate-200 flex-col sm:flex-row space-y-4 sm:space-y-0 font-light">
             <li>CoinDrip Protocol v{ContractAbi.buildInfo.contractCrate.version}</li>
-            <li>Build {process.env.BUILD_ID}</li>
+            {/* <li>Build {process.env.BUILD_ID}</li> */}
           </ul>
         </footer>
 
-        <img src="/bg-gradient.png" alt="" className="fixed bottom-0 left-0 right-0 mx-auto pointer-events-none" />
+        <img
+          src="/bg-gradient.png"
+          alt=""
+          className="hidden sm:block fixed bottom-0 left-0 right-0 mx-auto pointer-events-none"
+        />
+        <img
+          src="/bg-gradient.png"
+          alt=""
+          className="sm:hidden fixed bottom-0 inset-x-0 mx-auto pointer-events-none h-1/3 object-cover"
+        />
       </div>
     </>
   );

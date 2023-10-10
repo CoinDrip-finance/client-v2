@@ -10,9 +10,9 @@ interface InfoCardProps {
 
 export default function InfoCard({ showButton }: InfoCardProps) {
   return (
-    <div className="p-7 bg-neutral-950 border border-neutral-900 rounded-lg relative">
+    <div className="p-7 bg-neutral-950 border border-neutral-900 rounded-lg relative overflow-hidden">
       <div className="font-medium text-xl mb-2">We know how important is to get paid on time.</div>
-      <div className="text-light text-sm text-neutral-300">
+      <div className="text-light text-sm text-neutral-300 w-2/3 sm:w-full">
         With Coindrip, on time means <span className="text-primary">every second.</span>
       </div>
       <div className="flex items-center space-x-6 mt-6">
@@ -35,7 +35,7 @@ export default function InfoCard({ showButton }: InfoCardProps) {
       </div>
       <img
         src="/card-hour-glass.svg"
-        className={classNames("right-10 bottom-0 absolute", showButton ? "h-40" : "h-36")}
+        className={classNames("right-0 sm:right-10 -bottom-4 sm:bottom-0 absolute", showButton ? "h-40" : "h-36")}
       />
     </div>
   );

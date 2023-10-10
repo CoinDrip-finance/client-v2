@@ -1,14 +1,17 @@
 import { useAuth } from '@elrond-giants/erd-react-hooks';
 import axios from 'axios';
+import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 
 import BackButtonWrapper from '../../components/shared/BackWrapper';
 import Layout from '../../components/shared/Layout';
+import Nft from '../../components/stream_details/Nft';
 import Overview from '../../components/stream_details/Overview';
 import SenderRecipientDetails from '../../components/stream_details/SenderRecipient';
 import StreamActions from '../../components/stream_details/StreamActions';
+import StreamProgressBars from '../../components/stream_details/StreamProgressBars';
 import StreamProps from '../../components/stream_details/StreamProps';
 import { network } from '../../config';
 import { useTransaction } from '../../hooks/useTransaction';
@@ -71,6 +74,7 @@ const StreamDetails: NextPage = () => {
 
   return (
     <Layout>
+      <NextSeo title={`Stream #${data.id}`} />
       <BackButtonWrapper href={homePath} size="max-w-screen-md">
         <Overview data={data} tokenIcon={paymentTokenImage} />
 
@@ -78,7 +82,11 @@ const StreamDetails: NextPage = () => {
 
         <StreamProps data={data} />
 
+        <StreamProgressBars data={data} />
+
         <StreamActions data={data} refresh={mutate} />
+
+        <Nft data={data} />
       </BackButtonWrapper>
     </Layout>
   );

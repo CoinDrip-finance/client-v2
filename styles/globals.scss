@@ -62,6 +62,7 @@
 
   .streams-table {
     @apply border-separate border-spacing-y-1;
+    @apply w-full;
     thead {
       @apply bg-neutral-900;
       tr {
@@ -70,6 +71,7 @@
           @apply font-normal;
           @apply text-xs;
           @apply text-neutral-500;
+          @apply whitespace-nowrap;
           &:first-child {
             @apply pl-6;
             @apply rounded-l-lg;
@@ -88,6 +90,8 @@
           @apply py-5;
           @apply font-light;
           @apply text-sm;
+          @apply whitespace-nowrap;
+          @apply px-4;
           &:first-child {
             @apply pl-6;
             @apply rounded-l-lg;
@@ -98,6 +102,10 @@
           .secondary-text {
             @apply text-xs;
             @apply text-neutral-400;
+          }
+          @screen sm {
+            @apply whitespace-normal;
+            @apply px-0;
           }
         }
         &:hover {

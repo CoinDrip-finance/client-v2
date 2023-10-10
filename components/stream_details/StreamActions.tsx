@@ -7,16 +7,24 @@ import { getStreamStatus } from '../../utils/presentation';
 import CancelPopup from './CancelPopup';
 import ClaimAfterCancelPopup from './ClaimAfterCancelPopup';
 import ClaimPopup from './ClaimPopup';
+import MoreActionsPopup from './MoreActionsPopup';
 
 interface StreamActionProps {
   data: IStreamResponse;
   refresh: KeyedMutator<IStreamResponse>;
 }
 
+export enum StreamActionType {
+  Claim,
+  Cancel,
+  ClaimAfterCancel,
+}
+
 export default function StreamActions({ data, refresh }: StreamActionProps) {
   const [claimPopupOpen, setClaimPopupOpen] = useState(false);
   const [cancelPopupOpen, setCancelPopupOpen] = useState(false);
   const [claimAfterCancelPopupOpen, setClaimAfterCancelPopupOpen] = useState(false);
+  const [moreActionsPopup, setMoreActionsPopup] = useState(false);
 
   const streamStatus = useMemo(() => {
     return getStreamStatus(data);
@@ -37,6 +45,31 @@ export default function StreamActions({ data, refresh }: StreamActionProps) {
     setClaimAfterCancelPopupOpen(false);
   };
 
+  const onMoreActionsPopupClose = (action?: StreamActionType) => {
+    setMoreActionsPopup(false);
+
+    switch (action) {
+      case StreamActionType.Claim:
+        setClaimPopupOpen(true);
+        break;
+      case StreamActionType.Cancel:
+        setCancelPopupOpen(true);
+        break;
+      case StreamActionType.ClaimAfterCancel:
+        setClaimAfterCancelPopupOpen(true);
+        break;
+    }
+  };
+
+  const disabledActions = {
+    [StreamActionType.Claim]: streamStatus === StreamStatus.Finished || streamStatus === StreamStatus.Pending,
+    [StreamActionType.Cancel]:
+      !data?.stream?.can_cancel ||
+      streamStatus === StreamStatus.Finished ||
+      streamStatus === StreamStatus.Settled ||
+      streamStatus === StreamStatus.Canceled,
+  };
+
   return (
     <>
       <div className="mt-8">
@@ -48,7 +81,7 @@ export default function StreamActions({ data, refresh }: StreamActionProps) {
             onClick={() =>
               streamStatus === StreamStatus.Canceled ? setClaimAfterCancelPopupOpen(true) : setClaimPopupOpen(true)
             }
-            disabled={streamStatus === StreamStatus.Finished || streamStatus === StreamStatus.Pending}
+            disabled={disabledActions[StreamActionType.Claim]}
           >
             <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
             Withdraw
@@ -56,17 +89,12 @@ export default function StreamActions({ data, refresh }: StreamActionProps) {
           <button
             className="stream-action-button"
             onClick={() => setCancelPopupOpen(true)}
-            disabled={
-              !data?.stream?.can_cancel ||
-              streamStatus === StreamStatus.Finished ||
-              streamStatus === StreamStatus.Settled ||
-              streamStatus === StreamStatus.Canceled
-            }
+            disabled={disabledActions[StreamActionType.Cancel]}
           >
             <XCircleIcon className="w-5 h-5 mr-2" />
             Cancel stream
           </button>
-          <button className="stream-action-button">
+          <button className="stream-action-button" onClick={() => setMoreActionsPopup(true)}>
             <EllipsisHorizontalIcon className="w-5 h-5 mr-2" />
             More options
           </button>
@@ -76,6 +104,8 @@ export default function StreamActions({ data, refresh }: StreamActionProps) {
       <ClaimPopup data={data} open={claimPopupOpen} onClose={onClaimPopupClose} />
       <CancelPopup data={data} open={cancelPopupOpen} onClose={onCancelPopupClose} />
       <ClaimAfterCancelPopup data={data} open={claimAfterCancelPopupOpen} onClose={onClaimAfterCancelPopupClose} />
+
+      <MoreActionsPopup open={moreActionsPopup} onClose={onMoreActionsPopupClose} />
     </>
   );
 }

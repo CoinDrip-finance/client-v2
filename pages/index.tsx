@@ -1,6 +1,7 @@
 import { useAuth } from '@elrond-giants/erd-react-hooks';
 import { PlusSmallIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import { NextSeo } from 'next-seo';
 import { useEffect, useMemo, useState } from 'react';
 import useSWRInfinite from 'swr/infinite';
 
@@ -78,9 +79,10 @@ const Home: NextPage = () => {
 
   return (
     <Layout>
-      <div className="max-w-screen-lg w-full mx-auto mt-20 mb-7 flex items-end justify-between">
+      <NextSeo title="Dashboard" />
+      <div className="max-w-screen-lg w-full mx-auto sm:mt-20 mb-7 flex items-center justify-between">
         <div>
-          <h1 className="font-medium text-2xl mb-3">All streams</h1>
+          <h1 className="font-medium text-2xl mb-1 sm:mb-3">Dashboard</h1>
           <Dropdown
             items={streamFilterOptions}
             selectedItem={selectedFilter}

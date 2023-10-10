@@ -17,8 +17,8 @@ export default function ActionButton({ label, href, Icon, ...props }: ActionButt
   return (
     <LinkWrapper href={href}>
       <button {...props}>
-        {Icon && <Icon className="h-6 w-6 mr-1 inline-block" />}
-        {label}
+        {Icon && <Icon className="h-6 w-6 sm:mr-1 inline-block" />}
+        <span className="hidden sm:inline-block">{label}</span>
       </button>
     </LinkWrapper>
   );

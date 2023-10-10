@@ -61,6 +61,11 @@ const Auth: NextPage = () => {
   return (
     <>
       <div className="flex sm:h-screen">
+        <img
+          src="/bg-gradient.png"
+          alt=""
+          className="sm:hidden fixed top-0 rotate-180 inset-x-0 mx-auto pointer-events-none h-1/2 object-cover"
+        />
         <div
           className="flex-1 hidden sm:block bg-cover bg-center relative"
           style={{
@@ -69,7 +74,7 @@ const Auth: NextPage = () => {
         >
           <div className="absolute top-0 left-0 w-full h-full bg-[black] opacity-50"></div>
           <div className="absolute top-0 left-0 w-full h-full z-10 p-20 flex flex-col items-start justify-end space-y-10">
-            <img src="/logo.svg" alt="Giants" className="h-12" />
+            <img src="/logo.svg" alt="Coindrip" className="h-12" />
 
             <p className="text-white font-medium text-4xl max-w-xl leading-tight">
               The protocol for real-time payments
@@ -78,8 +83,8 @@ const Auth: NextPage = () => {
         </div>
         <div className="flex-1 flex items-center justify-center h-screen">
           <div className="max-w-lg">
-            <img src="/logo.svg" alt="Giants" className="h-16 mx-auto mb-8 sm:hidden" />
-            <h1 className="text-white font-medium text-4xl mb-2 text-center">Connect your wallet</h1>
+            <img src="/logo.svg" alt="Coindrip" className="h-10 mx-auto mb-24 sm:hidden" />
+            <h1 className="text-white font-medium text-2xl sm:text-4xl mb-2 text-center">Connect your wallet</h1>
             <p className="text-gray-400 font-light mb-10 text-center">Pick a login method to access CoinDrip</p>
             <div className="flex flex-col max-w-xs mx-auto space-y-3 mb-24">
               <button type="button" className="auth-button" onClick={walletConnectClickHandler}>
@@ -96,7 +101,7 @@ const Auth: NextPage = () => {
 
             <div>
               <p className="text-white font-medium text-xl text-center">New to MultiversX?</p>
-              <p className="text-gray-400 font-light text-base text-center mt-2">
+              <p className="text-gray-400 font-light text-base text-center mt-2 max-w-xs sm:max-w-none">
                 Easily create your own MultiversX wallet using{" "}
                 <a
                   href="https://xportal.com/"

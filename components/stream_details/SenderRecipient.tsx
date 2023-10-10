@@ -51,7 +51,7 @@ export default function SenderRecipientDetails({ data }: { data: IStreamResponse
             href={`${network.explorerAddress}/accounts/${data?.stream?.sender}`}
             target="_blank"
             rel="noreferrer"
-            className="hover:underline inline-flex items-center"
+            className="hover:underline inline-flex items-center text-white"
           >
             {senderUsername ? `@${senderUsername}` : getShortAddress(data?.stream?.sender || "", 6)}{" "}
             <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-2" />
@@ -63,7 +63,7 @@ export default function SenderRecipientDetails({ data }: { data: IStreamResponse
       </div>
       <div className="flex-1 text-neutral-400 ml-32">
         <div className="mb-1">Recipient</div>
-        <div className="bg-neutral-900 rounded-lg border border-neutral-800 px-4 py-2">
+        <div className="bg-neutral-900 rounded-lg border border-neutral-800 px-4 py-2 text-white">
           {recipient?.startsWith("erd1") ? (
             <a
               href={`${network.explorerAddress}/accounts/${recipient}`}
