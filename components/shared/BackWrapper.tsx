@@ -20,7 +20,7 @@ export default function BackButtonWrapper({ title, href, children, size = "max-w
           </button>
         </Link>
 
-        {title && <h1 className="font-medium text-xl ml-3 sm:ml-0">Create a stream</h1>}
+        {title && <h1 className="font-medium text-xl ml-3 sm:ml-0">{title}</h1>}
       </div>
 
       {children}

@@ -23,7 +23,7 @@ import { streamTypes } from './gallery';
 
 import type { NextPage } from "next";
 const Home: NextPage = () => {
-  const { address, logout, balance, nonce } = useAuth();
+  const { address } = useAuth();
   const { makeTransaction } = useTransaction();
   const router = useRouter();
 
@@ -115,8 +115,7 @@ const Home: NextPage = () => {
     <RequiresAuth>
       <Layout>
         <NextSeo title="Create stream" />
-        <BackButtonWrapper href={galleryPath}>
-          <h1 className="font-medium text-xl">Create a stream</h1>
+        <BackButtonWrapper href={galleryPath} title="Create a stream">
           <p className="mt-2 mb-8 font-light text-sm">Start streaming your ESDT in minutes.</p>
 
           <div className="flex flex-col space-y-4">

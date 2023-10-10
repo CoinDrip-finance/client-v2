@@ -37,7 +37,7 @@ export default function GallerPage() {
   return (
     <Layout>
       <NextSeo title="Streams Gallery" />
-      <BackButtonWrapper title="Create a stream" href={homePath}>
+      <BackButtonWrapper title="Pick a template" href={homePath}>
         <p className="mt-6 sm:mt-16 font-light text-sm">Select a Stream shape</p>
 
         <div className="mt-4 flex flex-col space-y-8">

@@ -44,7 +44,7 @@ export default function StreamProps({ data }: { data: IStreamResponse }) {
   }, [data]);
 
   return (
-    <div className="bg-neutral-900 border border-neutral-800 rounded-lg mt-8 p-5 grid grid-cols-3 gap-x-4 gap-y-6">
+    <div className="bg-neutral-900 border border-neutral-800 rounded-lg mt-8 p-5 grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-6">
       <StreamPropItem label="Status" value={status} Icon={BoltIcon} />
       <StreamPropItem label="Deposit" value={deposit} Icon={WalletIcon} />
       <StreamPropItem label="Cancelable" value={cancelable} Icon={XCircleIcon} />

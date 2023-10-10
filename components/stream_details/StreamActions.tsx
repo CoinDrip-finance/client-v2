@@ -75,7 +75,7 @@ export default function StreamActions({ data, refresh }: StreamActionProps) {
       <div className="mt-8">
         <div className="text-neutral-400">Actions</div>
 
-        <div className="mt-2 flex justify-between space-x-8">
+        <div className="mt-2 sm:flex justify-between items-center grid grid-cols-2 gap-4">
           <button
             className="stream-action-button"
             onClick={() =>

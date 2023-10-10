@@ -8,7 +8,7 @@ export default function Nft({ data }: { data: IStreamResponse }) {
     <div className="mt-8">
       <div className="text-neutral-400 mb-1">NFT</div>
       <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-8">
-        <div className="flex space-x-8">
+        <div className="flex sm:space-x-8 flex-col sm:flex-row">
           <div className="flex-1">
             <div>{data.nft?.name}</div>
             <div className="text-neutral-400 text-xs flex items-center">
@@ -37,7 +37,7 @@ export default function Nft({ data }: { data: IStreamResponse }) {
               See on XOXNO <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-2" />
             </a>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 order-first sm:order-last mb-8 sm:mb-0">
             <img src={data.nft?.url} alt={data.nft?.name} className="rounded-lg" />
           </div>
         </div>
