@@ -71,7 +71,7 @@ export default function ClaimPopup({ data, open, onClose }: ClaimPopupProps) {
       submitButtonLabel="Withdraw"
     >
       <div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6">
           <StreamPropItem
             label="Deposited"
             value={`${deposited} ${data.stream.payment.token_name}`}

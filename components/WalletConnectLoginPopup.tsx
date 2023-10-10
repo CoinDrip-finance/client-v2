@@ -15,7 +15,7 @@ export default function WalletConnectLoginPopup({ qrCode, uri, open, setOpen }: 
 
   return (
     <Popup open={open} setOpen={setOpen}>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center bg-neutral-900">
         <Dialog.Title as="h3" className="text-xl text-white">
           Scan QR code using xPortal
         </Dialog.Title>
