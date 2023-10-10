@@ -88,7 +88,7 @@ export default function DurationModal({ open, onClose }: DurationModalProps) {
                     {/* Suggested duration */}
                     <div className="mt-6">
                       <h4 className="text-neutral-600">Suggested</h4>
-                      <ul className="sm:flex items-center justify-between sm:space-x-4 mt-3 grid grid-cols-2 gap-4">
+                      <ul className="sm:flex items-center justify-between sm:space-x-4 mt-3 grid grid-cols-2 gap-4 sm:gap-0">
                         {suggested.map((item) => (
                           <li
                             key={item.label}
