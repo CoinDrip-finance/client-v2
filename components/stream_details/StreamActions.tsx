@@ -1,4 +1,10 @@
-import { ArrowDownTrayIcon, EllipsisHorizontalIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowDownTrayIcon,
+  EllipsisHorizontalIcon,
+  HandRaisedIcon,
+  PaperAirplaneIcon,
+  XCircleIcon,
+} from '@heroicons/react/24/outline';
 import { useMemo, useState } from 'react';
 import { KeyedMutator } from 'swr';
 
@@ -7,7 +13,7 @@ import { getStreamStatus } from '../../utils/presentation';
 import CancelPopup from './CancelPopup';
 import ClaimAfterCancelPopup from './ClaimAfterCancelPopup';
 import ClaimPopup from './ClaimPopup';
-import MoreActionsPopup from './MoreActionsPopup';
+import MoreActionsPopup, { MoreActionsItem } from './MoreActionsPopup';
 
 interface StreamActionProps {
   data: IStreamResponse;
@@ -18,6 +24,9 @@ export enum StreamActionType {
   Claim,
   Cancel,
   ClaimAfterCancel,
+  RenounceCancelStream,
+  Transfer,
+  Share,
 }
 
 export default function StreamActions({ data, refresh }: StreamActionProps) {
@@ -70,6 +79,41 @@ export default function StreamActions({ data, refresh }: StreamActionProps) {
       streamStatus === StreamStatus.Canceled,
   };
 
+  const allActionsList: MoreActionsItem[] = [
+    {
+      type: StreamActionType.Claim,
+      title: "Withdraw from stream",
+      description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eaque, delectus.",
+      Icon: ArrowDownTrayIcon,
+      buttonLabel: "Withdraw",
+      disabled: disabledActions[StreamActionType.Claim],
+    },
+    {
+      type: StreamActionType.Cancel,
+      title: "Cancel stream",
+      description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eaque, delectus.",
+      Icon: XCircleIcon,
+      buttonLabel: "Cancel",
+      disabled: disabledActions[StreamActionType.Cancel],
+    },
+    {
+      type: StreamActionType.RenounceCancelStream,
+      title: "Renounce cancelability",
+      description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eaque, delectus.",
+      Icon: HandRaisedIcon,
+      buttonLabel: "Renounce",
+      disabled: true,
+    },
+    {
+      type: StreamActionType.Transfer,
+      title: "Transfer Stream",
+      description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eaque, delectus.",
+      Icon: PaperAirplaneIcon,
+      buttonLabel: "Transfer",
+      disabled: true,
+    },
+  ];
+
   return (
     <>
       <div className="mt-8">
@@ -105,7 +149,7 @@ export default function StreamActions({ data, refresh }: StreamActionProps) {
       <CancelPopup data={data} open={cancelPopupOpen} onClose={onCancelPopupClose} />
       <ClaimAfterCancelPopup data={data} open={claimAfterCancelPopupOpen} onClose={onClaimAfterCancelPopupClose} />
 
-      <MoreActionsPopup open={moreActionsPopup} onClose={onMoreActionsPopupClose} />
+      <MoreActionsPopup open={moreActionsPopup} onClose={onMoreActionsPopupClose} items={allActionsList} />
     </>
   );
 }

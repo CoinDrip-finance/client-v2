@@ -32,6 +32,10 @@
     &:hover {
       @apply opacity-90;
     }
+    &:disabled {
+      @apply opacity-75;
+      @apply cursor-not-allowed;
+    }
   }
 
   .primary-action-button {

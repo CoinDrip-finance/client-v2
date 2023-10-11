@@ -16,7 +16,7 @@ interface IUser {
 }
 
 const navigation: any[] = [
-  { name: "All Streams", href: "/", current: true },
+  { name: "Dashboard", href: "/", current: true },
   { name: "Feedback", href: "https://forms.gle/gXbBRHjk3PK6vsNi6" },
 ];
 const userNavigation: any[] = [];

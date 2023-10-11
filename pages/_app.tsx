@@ -3,6 +3,7 @@ import '../styles/globals.scss';
 import { AuthContextProvider } from '@elrond-giants/erd-react-hooks';
 import { DefaultSeo } from 'next-seo';
 import { Poppins } from 'next/font/google';
+import Head from 'next/head';
 import { Provider as ReduxProvider } from 'react-redux';
 
 import Notifications from '../components/Notifications';
@@ -18,6 +19,9 @@ import type { AppProps } from "next/app";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+      </Head>
       <DefaultSeo titleTemplate="%s | Coindrip" defaultTitle="Coindrip" />
       <ReduxProvider store={store}>
         <AuthContextProvider
