@@ -55,8 +55,6 @@ export default class GetStreamAction extends BaseAction {
       },
     };
 
-    const streamContract = new StreamingContract();
-    const streamedAmount = await streamContract.getStreamedAmount(streamFromDb?.id as number);
     if (streamFromDb?.status !== "finalized") {
       try {
         const streamNftData = await getStreamNft(streamFromDb?.stream_nft_nonce as number);
@@ -70,6 +68,8 @@ export default class GetStreamAction extends BaseAction {
         };
       } catch (e) {}
 
+      const streamContract = new StreamingContract();
+      const streamedAmount = await streamContract.getStreamedAmount(streamFromDb?.id as number);
       const streamFromSc = await streamContract.getStream(streamFromDb?.id as number);
       const recipientBalance = await streamContract.getRecipientBalance(streamFromDb?.id as number);
 
@@ -81,7 +81,7 @@ export default class GetStreamAction extends BaseAction {
       };
     } else {
       response.stream.balance = {
-        streamed_amount: streamedAmount,
+        streamed_amount: claimed_amount,
         claimed_amount,
       };
     }
