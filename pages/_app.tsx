@@ -25,6 +25,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <DefaultSeo
         titleTemplate="%s | Coindrip"
         defaultTitle="Coindrip"
+        description="The token streaming protocol that facilitates web3 real-time payments, serving the needs of DAOs and businesses for tasks such as vesting, payroll, airdrops, and more."
         openGraph={{
           images: [
             {
