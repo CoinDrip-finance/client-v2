@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
 interface IProgressBarProps {
   value: number | string;
@@ -15,8 +15,8 @@ export default function ProgressBarSmall({ value, height = 5, width = 32 }: IPro
     }
   }, [value]);
   return (
-    <div className={`w-${width} h-[${height}px] bg-neutral-800 rounded-full`}>
-      <div className={`h-[${height}px] bg-primary rounded-full`} style={{ width: `${finalValue}%` }}></div>
+    <div className={`w-32 h-[5px] bg-neutral-800 rounded-full`}>
+      <div className={`h-[5px] bg-primary rounded-full`} style={{ width: `${finalValue}%` }}></div>
     </div>
   );
 }

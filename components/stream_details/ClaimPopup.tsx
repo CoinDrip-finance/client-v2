@@ -1,16 +1,16 @@
-import { useAuth } from '@elrond-giants/erd-react-hooks/dist';
-import { ArrowDownTrayIcon, BanknotesIcon, ChartPieIcon, KeyIcon, WalletIcon } from '@heroicons/react/24/outline';
-import axios from 'axios';
-import { useEffect, useMemo, useState } from 'react';
+import { useAuth } from "@elrond-giants/erd-react-hooks/dist";
+import { ArrowDownTrayIcon, BanknotesIcon, ChartPieIcon, KeyIcon, WalletIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
 
-import { network } from '../../config';
-import { useTransaction } from '../../hooks/useTransaction';
-import { IStreamResponse } from '../../types';
-import StreamingContract from '../../utils/contracts/streamContract';
-import { denominate } from '../../utils/economics';
-import { formatNumber, getAmountStreamed, getClaimedAmount, getDepositAmount } from '../../utils/presentation';
-import StreamDetailsBasePopup from './PopupBase';
-import StreamPropItem from './StreamPropItem';
+import { network } from "../../config";
+import { useTransaction } from "../../hooks/useTransaction";
+import { IStreamResponse } from "../../types";
+import StreamingContract from "../../utils/contracts/streamContract";
+import { denominate } from "../../utils/economics";
+import { formatNumber, getAmountStreamed, getClaimedAmount, getDepositAmount } from "../../utils/presentation";
+import StreamDetailsBasePopup from "./PopupBase";
+import StreamPropItem from "./StreamPropItem";
 
 interface ClaimPopupProps {
   data: IStreamResponse;
@@ -25,13 +25,14 @@ export default function ClaimPopup({ data, open, onClose }: ClaimPopupProps) {
 
   useEffect(() => {
     if (!data?.nft?.identifier) return;
+    if (!open) return;
     (async () => {
       const {
         data: { owner },
       } = await axios.get(`${network.apiAddress}/nfts/${data?.nft?.identifier}`);
       setStreamRecipient(owner);
     })();
-  }, [data?.nft?.identifier]);
+  }, [data?.nft?.identifier, open]);
 
   const onSubmit = async () => {
     if (!address) return;
