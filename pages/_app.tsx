@@ -1,13 +1,13 @@
-import '../styles/globals.scss';
+import "../styles/globals.scss";
 
-import { AuthContextProvider } from '@elrond-giants/erd-react-hooks';
-import { DefaultSeo } from 'next-seo';
-import { Poppins } from 'next/font/google';
-import Head from 'next/head';
-import { Provider as ReduxProvider } from 'react-redux';
+import { AuthContextProvider } from "@elrond-giants/erd-react-hooks";
+import { DefaultSeo } from "next-seo";
+import { Poppins } from "next/font/google";
+import Head from "next/head";
+import { Provider as ReduxProvider } from "react-redux";
 
-import Notifications from '../components/Notifications';
-import store from '../redux/store';
+import Notifications from "../components/Notifications";
+import store from "../redux/store";
 
 const poppinsFont = Poppins({
   display: "swap",
@@ -22,7 +22,25 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </Head>
-      <DefaultSeo titleTemplate="%s | Coindrip" defaultTitle="Coindrip" />
+      <DefaultSeo
+        titleTemplate="%s | Coindrip"
+        defaultTitle="Coindrip"
+        openGraph={{
+          images: [
+            {
+              url: "https://devnet-v2.coindrip.finance/og-image.png",
+              width: 1200,
+              height: 734.42,
+              type: "image/png",
+            },
+          ],
+          siteName: "Coindrip",
+        }}
+        twitter={{
+          handle: "@CoinDripHQ",
+          cardType: "summary_large_image",
+        }}
+      />
       <ReduxProvider store={store}>
         <AuthContextProvider
           env={process.env.NODE_ENV === "production" ? "mainnet" : "devnet"}
