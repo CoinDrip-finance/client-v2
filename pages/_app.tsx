@@ -1,12 +1,14 @@
 import "../styles/globals.scss";
 
 import { AuthContextProvider } from "@elrond-giants/erd-react-hooks";
+import { NetworkEnv } from "@elrond-giants/erdjs-auth/dist/types";
 import { DefaultSeo } from "next-seo";
 import { Poppins } from "next/font/google";
 import Head from "next/head";
 import { Provider as ReduxProvider } from "react-redux";
 
 import Notifications from "../components/Notifications";
+import { network } from "../config";
 import store from "../redux/store";
 
 const poppinsFont = Poppins({
@@ -43,10 +45,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         }}
       />
       <ReduxProvider store={store}>
-        <AuthContextProvider
-          env={process.env.NODE_ENV === "production" ? "mainnet" : "devnet"}
-          projectId={process.env.NEXT_PUBLIC_WALLET_CONNECT_ID}
-        >
+        <AuthContextProvider env={network.id as NetworkEnv} projectId={process.env.NEXT_PUBLIC_WALLET_CONNECT_ID}>
           <div className={poppinsFont.className}>
             <Component {...pageProps} />
             <Notifications />
