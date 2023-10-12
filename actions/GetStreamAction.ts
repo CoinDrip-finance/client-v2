@@ -1,15 +1,15 @@
-import axios from 'axios';
-import BigNumber from 'bignumber.js';
-import { NextApiRequest } from 'next';
+import axios from "axios";
+import BigNumber from "bignumber.js";
+import { NextApiRequest } from "next";
 
-import { nonceToHex } from '../apis/nfts';
-import { ClaimsRepository } from '../repositories/ClaimsRepository';
-import { StreamsRepository } from '../repositories/StreamsRepository';
-import { IStreamResponse } from '../types';
-import StreamingContract from '../utils/contracts/streamContract';
-import { network, streamsNftCollection } from './../config';
-import ApiResponse from './_base/ApiResponse';
-import BaseAction from './_base/BaseAction';
+import { nonceToHex } from "../apis/nfts";
+import { ClaimsRepository } from "../repositories/ClaimsRepository";
+import { StreamsRepository } from "../repositories/StreamsRepository";
+import { IStreamResponse } from "../types";
+import StreamingContract from "../utils/contracts/streamContract";
+import { network, streamsNftCollection } from "./../config";
+import ApiResponse from "./_base/ApiResponse";
+import BaseAction from "./_base/BaseAction";
 
 const getStreamNft = async (nonce: number) => {
   const { data } = await axios.get(`${network.apiAddress}/nfts/${streamsNftCollection}-${nonceToHex(nonce)}`);
@@ -55,6 +55,8 @@ export default class GetStreamAction extends BaseAction {
       },
     };
 
+    const streamContract = new StreamingContract();
+    const streamedAmount = await streamContract.getStreamedAmount(streamFromDb?.id as number);
     if (streamFromDb?.status !== "finalized") {
       try {
         const streamNftData = await getStreamNft(streamFromDb?.stream_nft_nonce as number);
@@ -68,22 +70,24 @@ export default class GetStreamAction extends BaseAction {
         };
       } catch (e) {}
 
-      const streamContract = new StreamingContract();
       const streamFromSc = await streamContract.getStream(streamFromDb?.id as number);
       const recipientBalance = await streamContract.getRecipientBalance(streamFromDb?.id as number);
 
       response.stream.balance = {
+        streamed_amount: streamedAmount,
         claimed_amount: streamFromSc.claimed_amount,
         balances_after_cancel: streamFromSc.balances_after_cancel,
         recipient_balance: streamFromSc?.balances_after_cancel?.recipient_balance || recipientBalance,
       };
     } else {
       response.stream.balance = {
+        streamed_amount: streamedAmount,
         claimed_amount,
       };
-      if (streamFromDb?.canceled?.streamed_until_cancel) {
-        response.stream.balance.recipient_balance = streamFromDb.canceled.streamed_until_cancel;
-      }
+    }
+
+    if (streamFromDb?.canceled?.streamed_until_cancel) {
+      response.stream.balance.streamed_until_cancel = streamFromDb.canceled.streamed_until_cancel;
     }
 
     return new ApiResponse({

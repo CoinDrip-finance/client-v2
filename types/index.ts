@@ -83,12 +83,14 @@ export interface IStreamResponse {
     can_cancel: boolean;
     cliff: number;
     balance?: {
+      streamed_amount: string;
       claimed_amount: string;
       balances_after_cancel?: {
         sender_balance: string;
         recipient_balance: string;
       };
       recipient_balance?: string;
+      streamed_until_cancel?: string;
     };
   };
   nft?: {

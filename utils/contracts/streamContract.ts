@@ -1,9 +1,9 @@
-import { Address, BooleanValue, TokenTransfer, U64Value } from '@multiversx/sdk-core/out';
+import { Address, BooleanValue, TokenTransfer, U64Value } from "@multiversx/sdk-core/out";
 
-import { contractAddress, streamsNftCollection } from '../../config';
-import { CreateStreamPayment } from '../../types';
-import coindripAbi from '../coindrip.abi.json';
-import Contract from './contract';
+import { contractAddress, streamsNftCollection } from "../../config";
+import { CreateStreamPayment } from "../../types";
+import coindripAbi from "../coindrip.abi.json";
+import Contract from "./contract";
 
 class StreamingContract extends Contract<typeof coindripAbi> {
   sender?: Address;
@@ -35,6 +35,13 @@ class StreamingContract extends Contract<typeof coindripAbi> {
 
   async getStream(streamId: number) {
     const interaction = this.contract.methods.getStreamData([new U64Value(streamId)]);
+    const queryResponse = await this.runQuery(interaction);
+
+    return queryResponse.firstValue?.valueOf();
+  }
+
+  async getStreamedAmount(streamId: number) {
+    const interaction = this.contract.methods.streamedAmount([new U64Value(streamId)]);
     const queryResponse = await this.runQuery(interaction);
 
     return queryResponse.firstValue?.valueOf();

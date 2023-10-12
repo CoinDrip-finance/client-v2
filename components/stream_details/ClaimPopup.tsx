@@ -7,7 +7,6 @@ import {
   KeyIcon,
   WalletIcon,
 } from "@heroicons/react/24/outline";
-import axios from "axios";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 import Moment from "react-moment";
@@ -23,25 +22,15 @@ import StreamPropItem from "./StreamPropItem";
 
 interface ClaimPopupProps {
   data: IStreamResponse;
+  streamRecipient?: string;
   open: boolean;
   onClose: () => void;
 }
 
-export default function ClaimPopup({ data, open, onClose }: ClaimPopupProps) {
+export default function ClaimPopup({ data, open, onClose, streamRecipient }: ClaimPopupProps) {
   const { address } = useAuth();
   const { makeTransaction } = useTransaction();
-  const [streamRecipient, setStreamRecipient] = useState<string>();
-
-  useEffect(() => {
-    if (!data?.nft?.identifier) return;
-    if (!open) return;
-    (async () => {
-      const {
-        data: { owner },
-      } = await axios.get(`${network.apiAddress}/nfts/${data?.nft?.identifier}`);
-      setStreamRecipient(owner);
-    })();
-  }, [data?.nft?.identifier, open]);
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async () => {
     if (!address) return;
@@ -49,8 +38,10 @@ export default function ClaimPopup({ data, open, onClose }: ClaimPopupProps) {
     const interaction = streamingContract.claimStream(data.id);
 
     try {
+      setLoading(true);
       const txResult = await makeTransaction(interaction.buildTransaction());
     } finally {
+      setLoading(false);
       onClose();
     }
   };
@@ -91,7 +82,7 @@ export default function ClaimPopup({ data, open, onClose }: ClaimPopupProps) {
       onClose={onClose}
       onSubmit={onSubmit}
       title="Withdraw from stream"
-      hideSubmitButton={streamRecipient !== address || readyToClaim <= 0 || !!cliff}
+      hideSubmitButton={streamRecipient !== address || readyToClaim <= 0 || !!cliff || loading}
       submitButtonLabel="Withdraw"
     >
       <div>

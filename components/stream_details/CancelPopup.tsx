@@ -1,9 +1,7 @@
 import { useAuth } from "@elrond-giants/erd-react-hooks/dist";
 import { ArrowDownTrayIcon, BanknotesIcon, ChartPieIcon, KeyIcon, WalletIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 
-import { network } from "../../config";
 import { useTransaction } from "../../hooks/useTransaction";
 import { IStreamResponse } from "../../types";
 import StreamingContract from "../../utils/contracts/streamContract";
@@ -14,25 +12,15 @@ import StreamPropItem from "./StreamPropItem";
 
 interface CancelPopupProps {
   data: IStreamResponse;
+  streamRecipient?: string;
   open: boolean;
   onClose: () => void;
 }
 
-export default function CancelPopup({ data, open, onClose }: CancelPopupProps) {
+export default function CancelPopup({ data, open, onClose, streamRecipient }: CancelPopupProps) {
   const { address } = useAuth();
   const { makeTransaction } = useTransaction();
-  const [streamRecipient, setStreamRecipient] = useState<string>();
-
-  useEffect(() => {
-    if (!data?.nft?.identifier) return;
-    if (!open) return;
-    (async () => {
-      const {
-        data: { owner },
-      } = await axios.get(`${network.apiAddress}/nfts/${data?.nft?.identifier}`);
-      setStreamRecipient(owner);
-    })();
-  }, [data?.nft?.identifier, open]);
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async () => {
     if (!address) return;
@@ -40,8 +28,10 @@ export default function CancelPopup({ data, open, onClose }: CancelPopupProps) {
     const interaction = streamingContract.cancelStream(data.id, address === streamRecipient);
 
     try {
+      setLoading(true);
       const txResult = await makeTransaction(interaction.buildTransaction());
     } finally {
+      setLoading(false);
       onClose();
     }
   };
@@ -72,7 +62,7 @@ export default function CancelPopup({ data, open, onClose }: CancelPopupProps) {
       onClose={onClose}
       onSubmit={onSubmit}
       title="Cancel stream"
-      hideSubmitButton={streamRecipient !== address && data?.stream?.sender !== address}
+      hideSubmitButton={(streamRecipient !== address && data?.stream?.sender !== address) || loading}
       submitButtonLabel="Cancel"
     >
       <div>

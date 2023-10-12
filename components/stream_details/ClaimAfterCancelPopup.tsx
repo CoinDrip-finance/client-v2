@@ -1,9 +1,7 @@
 import { useAuth } from "@elrond-giants/erd-react-hooks/dist";
 import { ArrowDownTrayIcon, BanknotesIcon, ChartPieIcon, KeyIcon, WalletIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 
-import { network } from "../../config";
 import { useTransaction } from "../../hooks/useTransaction";
 import { IStreamResponse } from "../../types";
 import StreamingContract from "../../utils/contracts/streamContract";
@@ -14,25 +12,14 @@ import StreamPropItem from "./StreamPropItem";
 
 interface ClaimAfterCancelPopupProps {
   data: IStreamResponse;
+  streamRecipient?: string;
   open: boolean;
   onClose: () => void;
 }
 
-export default function ClaimAfterCancelPopup({ data, open, onClose }: ClaimAfterCancelPopupProps) {
+export default function ClaimAfterCancelPopup({ data, open, onClose, streamRecipient }: ClaimAfterCancelPopupProps) {
   const { address } = useAuth();
   const { makeTransaction } = useTransaction();
-  const [streamRecipient, setStreamRecipient] = useState<string>();
-
-  useEffect(() => {
-    if (!data?.nft?.identifier) return;
-    if (!open) return;
-    (async () => {
-      const {
-        data: { owner },
-      } = await axios.get(`${network.apiAddress}/nfts/${data?.nft?.identifier}`);
-      setStreamRecipient(owner);
-    })();
-  }, [data?.nft?.identifier, open]);
 
   const onSubmit = async () => {
     if (!address) return;

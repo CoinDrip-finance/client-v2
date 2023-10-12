@@ -1,10 +1,10 @@
-import axios from 'axios';
-import BigNumber from 'bignumber.js';
-import moment from 'moment';
+import axios from "axios";
+import BigNumber from "bignumber.js";
+import moment from "moment";
 
-import { network } from '../config';
-import { IStreamResource, IStreamResponse, StreamStatus } from '../types';
-import { denominate } from './economics';
+import { network } from "../config";
+import { IStreamResource, IStreamResponse, StreamStatus } from "../types";
+import { denominate } from "./economics";
 
 export function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -77,12 +77,11 @@ export const getDepositAmount = (data: IStreamResponse): number => {
 };
 
 export const getClaimedAmount = (data: IStreamResponse): { value: number; percent: string } => {
-  if (!data?.stream?.balance?.claimed_amount)
-    return {
-      value: 0,
-      percent: "0",
-    };
-  const balance = denominate(data.stream.balance.claimed_amount, 5, data.stream.payment.token_decimals).toNumber();
+  const balance = denominate(
+    data?.stream?.balance?.claimed_amount || 0,
+    5,
+    data.stream.payment.token_decimals
+  ).toNumber();
   const fullDeposit = getDepositAmount(data);
   return {
     value: balance,
@@ -91,15 +90,11 @@ export const getClaimedAmount = (data: IStreamResponse): { value: number; percen
 };
 
 export const getAmountStreamed = (data: IStreamResponse): { value: number; percent: string } => {
-  if (!(data?.stream?.balance?.recipient_balance || data?.stream?.balance?.claimed_amount))
-    return {
-      value: 0,
-      percent: "0",
-    };
+  let streamed = new BigNumber(data?.stream?.balance?.streamed_amount || 0);
+  if (data?.stream?.balance?.streamed_until_cancel) {
+    streamed = new BigNumber(data?.stream?.balance?.streamed_until_cancel);
+  }
 
-  const streamed = new BigNumber(data?.stream?.balance?.recipient_balance || 0).plus(
-    new BigNumber(data?.stream?.balance?.claimed_amount || 0)
-  );
   const balance = denominate(streamed.toString(), 5, data.stream.payment.token_decimals).toNumber();
   const fullDeposit = getDepositAmount(data);
   return {

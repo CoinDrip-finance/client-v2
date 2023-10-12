@@ -1,19 +1,19 @@
-import { useAuth } from '@elrond-giants/erd-react-hooks';
-import { PlusSmallIcon } from '@heroicons/react/24/outline';
-import axios from 'axios';
-import { NextSeo } from 'next-seo';
-import { useEffect, useMemo, useState } from 'react';
-import useSWRInfinite from 'swr/infinite';
+import { useAuth } from "@elrond-giants/erd-react-hooks";
+import { PlusSmallIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+import { NextSeo } from "next-seo";
+import { useEffect, useMemo, useState } from "react";
+import useSWRInfinite from "swr/infinite";
 
-import { fetchStreamNftsNonceList } from '../apis/nfts';
-import Dropdown, { DropdownItem } from '../components/Dropdown';
-import InfoCard from '../components/InfoCard';
-import ActionButton from '../components/shared/ActionButton';
-import Layout from '../components/shared/Layout';
-import StreamsTable from '../components/stream_list/StreamsTable';
-import { IStreamResource } from '../types';
-import { classNames } from '../utils/presentation';
-import { galleryPath } from '../utils/routes';
+import { fetchStreamNftsNonceList } from "../apis/nfts";
+import Dropdown, { DropdownItem } from "../components/Dropdown";
+import InfoCard from "../components/InfoCard";
+import ActionButton from "../components/shared/ActionButton";
+import Layout from "../components/shared/Layout";
+import StreamsTable from "../components/stream_list/StreamsTable";
+import { IStreamResource } from "../types";
+import { classNames } from "../utils/presentation";
+import { galleryPath } from "../utils/routes";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 const PAGE_SIZE = 6;
@@ -100,7 +100,11 @@ const Home: NextPage = () => {
         <div className="flex flex-col items-start space-y-2 max-w-screen-lg w-full mx-auto">
           <StreamsTable streams={streams} />
 
-          {isEmpty ? (
+          {isLoading ? (
+            <div className="text-center py-8 border-2 border-neutral-900 text-neutral-700 bg-neutral-900 bg-opacity-10 rounded-lg w-full flex justify-center">
+              <img src="/stream_details/loading.gif" alt="Loading stream" className="h-32" />
+            </div>
+          ) : isEmpty ? (
             <div className="text-center py-8 border-2 border-neutral-900 text-neutral-700 bg-neutral-900 bg-opacity-10 rounded-lg w-full">
               No results found
             </div>

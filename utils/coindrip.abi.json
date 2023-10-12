@@ -138,6 +138,32 @@
         "E = end time",
         "The zone marked with \"****...\" represents the recipient balance"
       ],
+      "name": "streamedAmount",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "stream_id",
+          "type": "u64"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "docs": [
+        "",
+        "Calculates the recipient balance based on the amount stream so far and the already claimed amount",
+        "|xxxx|*******|--|",
+        "S            C  E",
+        "S = start time",
+        "xxxx = already claimed amount",
+        "C = current time",
+        "E = end time",
+        "The zone marked with \"****...\" represents the recipient balance"
+      ],
       "name": "recipientBalance",
       "mutability": "readonly",
       "inputs": [
@@ -369,6 +395,11 @@
         {
           "name": "amount",
           "type": "BigUint",
+          "indexed": true
+        },
+        {
+          "name": "recipient",
+          "type": "Address",
           "indexed": true
         }
       ]

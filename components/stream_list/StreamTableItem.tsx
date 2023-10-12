@@ -1,13 +1,13 @@
-import BigNumber from 'bignumber.js';
-import moment from 'moment';
-import { useRouter } from 'next/router';
-import { useMemo } from 'react';
+import BigNumber from "bignumber.js";
+import moment from "moment";
+import { useRouter } from "next/router";
+import { useMemo } from "react";
 
-import { IStreamResource, StreamStatus } from '../../types';
-import { denominate } from '../../utils/economics';
-import { classNames, getShortAddress, getStreamStatus } from '../../utils/presentation';
-import { streamDetailsPath } from '../../utils/routes';
-import ProgressBarSmall from './ProgressBarSmall';
+import { IStreamResource, StreamStatus } from "../../types";
+import { denominate } from "../../utils/economics";
+import { classNames, getShortAddress, getStreamStatus } from "../../utils/presentation";
+import { streamDetailsPath } from "../../utils/routes";
+import ProgressBarSmall from "./ProgressBarSmall";
 
 const formatDate = (date: string): string => {
   return moment(date).format("MMM Do 'YY @ H a");
@@ -46,8 +46,11 @@ export default function StreamTableItem({ stream }: { stream: IStreamResource })
   const streamedAmount = useMemo(() => {
     if (status === StreamStatus.Pending) return 0;
     if (status === StreamStatus.Settled) return 100;
+    const deposit = new BigNumber(stream.deposit);
+    if (status === StreamStatus.Canceled) {
+      return new BigNumber(stream?.canceled?.streamed_until_cancel || 0).div(deposit).multipliedBy(100).toNumber();
+    }
     if (status === StreamStatus.Finished) {
-      const deposit = new BigNumber(stream.deposit);
       if (!stream.canceled) {
         return 100;
       } else {

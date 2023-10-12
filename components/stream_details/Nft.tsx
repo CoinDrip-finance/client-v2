@@ -1,9 +1,19 @@
-import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
-import { network, xoxnoUrl } from '../../config';
-import { IStreamResponse } from '../../types';
+import { network, xoxnoUrl } from "../../config";
+import { IStreamResponse } from "../../types";
 
 export default function Nft({ data }: { data: IStreamResponse }) {
+  if (!data?.nft) {
+    return (
+      <div className="mt-8">
+        <div className="text-neutral-400 mb-1">NFT</div>
+        <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-5 text-sm">
+          The recipient of this stream claimed all his remaining funds and the associated NFT was burned.
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="mt-8">
       <div className="text-neutral-400 mb-1">NFT</div>

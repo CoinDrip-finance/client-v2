@@ -4,16 +4,18 @@ import {
   HandRaisedIcon,
   PaperAirplaneIcon,
   XCircleIcon,
-} from '@heroicons/react/24/outline';
-import { useMemo, useState } from 'react';
-import { KeyedMutator } from 'swr';
+} from "@heroicons/react/24/outline";
+import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
+import { KeyedMutator } from "swr";
 
-import { IStreamResponse, StreamStatus } from '../../types';
-import { getStreamStatus } from '../../utils/presentation';
-import CancelPopup from './CancelPopup';
-import ClaimAfterCancelPopup from './ClaimAfterCancelPopup';
-import ClaimPopup from './ClaimPopup';
-import MoreActionsPopup, { MoreActionsItem } from './MoreActionsPopup';
+import { network } from "../../config";
+import { IStreamResponse, StreamStatus } from "../../types";
+import { getStreamStatus } from "../../utils/presentation";
+import CancelPopup from "./CancelPopup";
+import ClaimAfterCancelPopup from "./ClaimAfterCancelPopup";
+import ClaimPopup from "./ClaimPopup";
+import MoreActionsPopup, { MoreActionsItem } from "./MoreActionsPopup";
 
 interface StreamActionProps {
   data: IStreamResponse;
@@ -34,6 +36,18 @@ export default function StreamActions({ data, refresh }: StreamActionProps) {
   const [cancelPopupOpen, setCancelPopupOpen] = useState(false);
   const [claimAfterCancelPopupOpen, setClaimAfterCancelPopupOpen] = useState(false);
   const [moreActionsPopup, setMoreActionsPopup] = useState(false);
+
+  const [streamRecipient, setStreamRecipient] = useState<string>();
+
+  useEffect(() => {
+    if (!data?.nft?.identifier) return;
+    (async () => {
+      const {
+        data: { owner },
+      } = await axios.get(`${network.apiAddress}/nfts/${data?.nft?.identifier}`);
+      setStreamRecipient(owner);
+    })();
+  }, [data?.nft?.identifier]);
 
   const streamStatus = useMemo(() => {
     return getStreamStatus(data);
@@ -145,9 +159,14 @@ export default function StreamActions({ data, refresh }: StreamActionProps) {
         </div>
       </div>
 
-      <ClaimPopup data={data} open={claimPopupOpen} onClose={onClaimPopupClose} />
-      <CancelPopup data={data} open={cancelPopupOpen} onClose={onCancelPopupClose} />
-      <ClaimAfterCancelPopup data={data} open={claimAfterCancelPopupOpen} onClose={onClaimAfterCancelPopupClose} />
+      <ClaimPopup data={data} open={claimPopupOpen} onClose={onClaimPopupClose} streamRecipient={streamRecipient} />
+      <CancelPopup data={data} open={cancelPopupOpen} onClose={onCancelPopupClose} streamRecipient={streamRecipient} />
+      <ClaimAfterCancelPopup
+        data={data}
+        open={claimAfterCancelPopupOpen}
+        onClose={onClaimAfterCancelPopupClose}
+        streamRecipient={streamRecipient}
+      />
 
       <MoreActionsPopup open={moreActionsPopup} onClose={onMoreActionsPopupClose} items={allActionsList} />
     </>
