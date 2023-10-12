@@ -1,7 +1,16 @@
 import { useAuth } from "@elrond-giants/erd-react-hooks/dist";
-import { ArrowDownTrayIcon, BanknotesIcon, ChartPieIcon, KeyIcon, WalletIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowDownTrayIcon,
+  BanknotesIcon,
+  ChartPieIcon,
+  ClockIcon,
+  KeyIcon,
+  WalletIcon,
+} from "@heroicons/react/24/outline";
 import axios from "axios";
+import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
+import Moment from "react-moment";
 
 import { network } from "../../config";
 import { useTransaction } from "../../hooks/useTransaction";
@@ -58,6 +67,20 @@ export default function ClaimPopup({ data, open, onClose }: ClaimPopupProps) {
     return getClaimedAmount(data);
   }, [data]);
 
+  const cliff = useMemo(() => {
+    if (data.stream.cliff === 0) {
+      return null;
+    }
+    const currentDate = moment();
+    const cliffEnd = moment(data.stream.start_time).add(data.stream.cliff, "seconds");
+
+    if (currentDate >= cliffEnd) {
+      return null;
+    }
+
+    return cliffEnd.toString();
+  }, [data]);
+
   const readyToClaim = useMemo(() => {
     return denominate(data.stream.balance?.recipient_balance || 0, 5, data.stream.payment.token_decimals).toNumber();
   }, [data.stream.balance?.recipient_balance]);
@@ -68,7 +91,7 @@ export default function ClaimPopup({ data, open, onClose }: ClaimPopupProps) {
       onClose={onClose}
       onSubmit={onSubmit}
       title="Withdraw from stream"
-      hideSubmitButton={streamRecipient !== address || readyToClaim <= 0}
+      hideSubmitButton={streamRecipient !== address || readyToClaim <= 0 || cliff}
       submitButtonLabel="Withdraw"
     >
       <div>
@@ -112,6 +135,18 @@ export default function ClaimPopup({ data, open, onClose }: ClaimPopupProps) {
                 {data.nft?.identifier}
               </a>{" "}
               can withdraw from this stream.
+            </p>
+          </div>
+        )}
+
+        {cliff && (
+          <div className="bg-neutral-800 border border-neutral-700 py-2 px-4 rounded-lg text-sm mt-8">
+            <div className="flex items-center font-semibold text-orange-400">
+              <ClockIcon className="w-5 h-5 mr-2" />
+              Active cliff period
+            </div>
+            <p className="font-light mt-2">
+              This stream has an active cliff. You will be able to claim <Moment fromNow>{cliff}</Moment>.
             </p>
           </div>
         )}
