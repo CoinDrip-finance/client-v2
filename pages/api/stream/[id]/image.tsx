@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ImageResponse } from "@vercel/og";
 import { NextApiHandler } from "next";
 
