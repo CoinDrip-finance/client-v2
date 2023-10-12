@@ -91,7 +91,7 @@ export default function ClaimPopup({ data, open, onClose }: ClaimPopupProps) {
       onClose={onClose}
       onSubmit={onSubmit}
       title="Withdraw from stream"
-      hideSubmitButton={streamRecipient !== address || readyToClaim <= 0 || cliff}
+      hideSubmitButton={streamRecipient !== address || readyToClaim <= 0 || !!cliff}
       submitButtonLabel="Withdraw"
     >
       <div>
