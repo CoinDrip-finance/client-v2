@@ -1,7 +1,7 @@
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { ImageResponse } from 'next/server';
 
-export const runtime = "edge";
+export const runtime = "experimental-edge";
 
 export const alt = "About Acme";
 export const size = {
