@@ -101,8 +101,8 @@ const Home: NextPage = () => {
           <StreamsTable streams={streams} />
 
           {isLoading ? (
-            <div className="text-center py-8 border-2 border-neutral-900 text-neutral-700 bg-neutral-900 bg-opacity-10 rounded-lg w-full flex justify-center">
-              <img src="/stream_details/loading.gif" alt="Loading stream" className="h-32" />
+            <div className="text-center py-8 border-2 border-neutral-900 rounded-lg w-full flex justify-center">
+              <img src="/stream_details/loading.gif" alt="Loading stream" className="h-28 pointer-events-none" />
             </div>
           ) : isEmpty ? (
             <div className="text-center py-8 border-2 border-neutral-900 text-neutral-700 bg-neutral-900 bg-opacity-10 rounded-lg w-full">

@@ -1,13 +1,13 @@
-import { useAuth } from '@elrond-giants/erd-react-hooks/dist';
-import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { LockClosedIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { useAuth } from "@elrond-giants/erd-react-hooks/dist";
+import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
+import { Fragment, useEffect, useMemo, useState } from "react";
 
-import ContractAbi from '../../utils/coindrip.abi.json';
-import { classNames, getHerotag, getShortAddress } from '../../utils/presentation';
-import { authPath, homePath } from '../../utils/routes';
-import Logo from './Logo';
+import ContractAbi from "../../utils/coindrip.abi.json";
+import { classNames, getHerotag, getShortAddress } from "../../utils/presentation";
+import { authPath, homePath } from "../../utils/routes";
+import Logo from "./Logo";
 
 interface IUser {
   herotag?: string;
@@ -52,10 +52,13 @@ export default function Layout({ children }: any) {
     <>
       <div className="min-h-full">
         <div className="pb-16 sm:pb-20">
-          <div className="relative flex justify-center py-2 bg-gray-300 bg-opacity-10 text-white text-xs z-10">
+          {/* <div className="relative flex justify-center py-2 bg-gray-300 bg-opacity-10 text-white text-xs z-10">
             <LockClosedIcon className="w-3 mr-1 text-green-300" /> Scam/Phishing verification:{" "}
             <span className="text-green-300 pl-1">https://</span>
             app.coindrip.finance
+          </div> */}
+          <div className="relative flex justify-center py-2 bg-gray-300 bg-opacity-10 text-white text-xs z-10">
+            <InformationCircleIcon className="w-4 mr-1 text-primary" /> Running on Devnet
           </div>
           <Disclosure as="nav" className="pt-2 relative z-10">
             {({ open }) => (
