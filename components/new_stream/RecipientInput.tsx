@@ -1,11 +1,11 @@
-import { useAuth } from '@elrond-giants/erd-react-hooks/dist';
-import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
-import axios from 'axios';
-import { useEffect, useMemo, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useAuth } from "@elrond-giants/erd-react-hooks/dist";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
+import { useFormContext } from "react-hook-form";
 
-import { network } from '../../config';
-import { classNames, getShortAddress } from '../../utils/presentation';
+import { network } from "../../config";
+import { classNames, getShortAddress } from "../../utils/presentation";
 
 const getHeroTagByAdress = async (address: string): Promise<string | null> => {
   try {
@@ -43,17 +43,25 @@ export default function RecipientInput() {
   }, [recipientInputValue]);
 
   useEffect(() => {
-    if (!recipientInputValue) return;
+    if (!recipientInputValue) {
+      setRecipientHeroTag("");
+      setRecipientAddress("");
+      return;
+    }
     (async () => {
       if (recipientInputValue?.startsWith("erd1")) {
         setRecipientAddress(recipientInputValue);
         const heroTag = await getHeroTagByAdress(recipientInputValue);
         if (heroTag) setRecipientHeroTag(heroTag);
+        else setRecipientHeroTag("");
       } else {
         const address = await getAddressByHeroTag(recipientInputValue);
         if (address) {
           setRecipientAddress(address);
           setRecipientHeroTag(recipientInputValue);
+        } else {
+          setRecipientHeroTag("");
+          setRecipientAddress("");
         }
       }
     })();
@@ -64,6 +72,7 @@ export default function RecipientInput() {
   }, [isAddress, recipientAddress, recipientHeroTag]);
 
   useEffect(() => {
+    if (!recipientAddress) return;
     setValue("recipient", recipientAddress);
   }, [recipientAddress]);
 
