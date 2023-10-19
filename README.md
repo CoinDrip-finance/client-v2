@@ -2,6 +2,8 @@
 
 This is the official dApp built for the [Coindrip V2 Protocol](https://github.com/CoinDrip-finance/protocol-v2).
 
+<img width="1253" alt="Screenshot 2023-10-19 at 9 24 34 PM" src="https://github.com/CoinDrip-finance/client-v2/assets/63841990/79dc4158-d427-40ef-818d-57d353c699f3">
+
 It offers the following functions:
 
 - See/Filter your incoming/outgoing streams
