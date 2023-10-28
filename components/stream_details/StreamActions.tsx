@@ -97,7 +97,7 @@ export default function StreamActions({ data, refresh }: StreamActionProps) {
     {
       type: StreamActionType.Claim,
       title: "Withdraw from stream",
-      description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eaque, delectus.",
+      description: "Funds that have been streamed can be withdrawn by the recipient.",
       Icon: ArrowDownTrayIcon,
       buttonLabel: "Withdraw",
       disabled: disabledActions[StreamActionType.Claim],
@@ -105,7 +105,7 @@ export default function StreamActions({ data, refresh }: StreamActionProps) {
     {
       type: StreamActionType.Cancel,
       title: "Cancel stream",
-      description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eaque, delectus.",
+      description: "Cancellation is a permanent action, and any unstreamed funds will be returned to the sender.",
       Icon: XCircleIcon,
       buttonLabel: "Cancel",
       disabled: disabledActions[StreamActionType.Cancel],
@@ -113,7 +113,8 @@ export default function StreamActions({ data, refresh }: StreamActionProps) {
     {
       type: StreamActionType.RenounceCancelStream,
       title: "Renounce cancelability",
-      description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eaque, delectus.",
+      description:
+        "Renouncing cancelability ensures that 100% of the funds will ultimately be delivered to the recipient.",
       Icon: HandRaisedIcon,
       buttonLabel: "Renounce",
       disabled: true,
@@ -121,7 +122,7 @@ export default function StreamActions({ data, refresh }: StreamActionProps) {
     {
       type: StreamActionType.Transfer,
       title: "Transfer Stream",
-      description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eaque, delectus.",
+      description: "The recipient has the ability to send this NFT stream to a different address.",
       Icon: PaperAirplaneIcon,
       buttonLabel: "Transfer",
       disabled: true,

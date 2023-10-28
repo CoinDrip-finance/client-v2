@@ -53,8 +53,8 @@ export default function CancelPopup({ data, open, onClose, streamRecipient }: Ca
   }, [data.stream.balance?.recipient_balance]);
 
   const readyToClaimBySender = useMemo(() => {
-    return deposited - amountStreamed.value;
-  }, [deposited, amountStreamed]);
+    return deposited - claimed.value - readyToClaimByRecipient;
+  }, [deposited, claimed, readyToClaimByRecipient]);
 
   return (
     <StreamDetailsBasePopup
