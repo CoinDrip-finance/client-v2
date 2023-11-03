@@ -1,11 +1,17 @@
+import { createHash } from "crypto";
+import prand from "pure-rand";
 import svgSlim from "svg-slimming";
 
 export const generateNftSvg = async (
+  seed: string,
   streamId: number,
   tokenIdentifier: string,
   canCancel: boolean,
   duration: number
 ): Promise<string> => {
+  const streamBaseColor = generateRandomHSLColor(seed);
+  const streamBaseColorSecondary = generateRandomHSLColor(seed, 0.6);
+
   const durationString = duration === 0 ? "&lt; 1 Day" : duration === 1 ? "1 Day" : `${duration} Days`;
   return svgSlim(`<svg xmlns="http://www.w3.org/2000/svg"
   xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000" fill="none"
@@ -33,40 +39,40 @@ export const generateNftSvg = async (
     canCancel ? "Yes" : "No"
   }</text><text x="409" y="815" font-size="22" class="B F">${durationString}</text><defs>
 <linearGradient id="B" x1="1216.83" y1="-468.569" x2="-109.524" y2="1314.32" xlink:href="#P">
-  <stop stop-color="#00fff7"/>
+  <stop stop-color="${streamBaseColor}"/>
   <stop offset=".544" stop-opacity="0"/>
-  <stop offset="1" stop-color="#00e7e0" stop-opacity=".905"/>
+  <stop offset="1" stop-color="${streamBaseColorSecondary}" stop-opacity=".905"/>
 </linearGradient>
 <linearGradient id="C" x1="947.163" y1="418.134" x2="206.874" y2="408.316" xlink:href="#P">
-  <stop stop-color="#00fff7"/>
+  <stop stop-color="${streamBaseColor}"/>
   <stop offset="1" stop-opacity="0"/>
 </linearGradient>
 <linearGradient id="D" x1="265.06" y1="412.431" x2="712.363" y2="412.431" xlink:href="#P">
-  <stop stop-color="#00fff7"/>
+<stop stop-color="${streamBaseColor}"/>
   <stop offset="1" stop-opacity="0"/>
 </linearGradient>
 <linearGradient id="E" x1="368.08" y1="720.175" x2="126.553" y2="853.702" xlink:href="#P">
-  <stop stop-color="#00fff7"/>
+<stop stop-color="${streamBaseColor}"/>
   <stop offset=".818" stop-opacity="0"/>
 </linearGradient>
 <linearGradient id="F" x1="115.401" y1="794.3" x2="352.601" y2="794.3" xlink:href="#P">
-  <stop stop-color="#00fff7"/>
+<stop stop-color="${streamBaseColor}"/>
   <stop offset="1" stop-color="#0ff" stop-opacity="0"/>
 </linearGradient>
 <linearGradient id="G" x1="368.76" y1="868.503" x2="610.286" y2="734.976" xlink:href="#P">
-  <stop stop-color="#00fff7"/>
+<stop stop-color="${streamBaseColor}"/>
   <stop offset="1" stop-opacity="0"/>
 </linearGradient>
 <linearGradient id="H" x1="621.601" y1="794.3" x2="384.397" y2="794.3" xlink:href="#P">
-  <stop stop-color="#00fff7"/>
+<stop stop-color="${streamBaseColor}"/>
   <stop offset="1" stop-color="#0ff" stop-opacity="0"/>
 </linearGradient>
 <linearGradient id="I" x1="900.194" y1="720.123" x2="658.668" y2="853.65" xlink:href="#P">
-  <stop stop-color="#00fff7"/>
+<stop stop-color="${streamBaseColor}"/>
   <stop offset="1" stop-opacity="0"/>
 </linearGradient>
 <linearGradient id="J" x1="647.4" y1="794.3" x2="884.604" y2="794.3" xlink:href="#P">
-  <stop stop-color="#00fff7"/>
+<stop stop-color="${streamBaseColor}"/>
   <stop offset="1" stop-color="#0ff" stop-opacity="0"/>
 </linearGradient>
 <clipPath id="K">
@@ -81,3 +87,22 @@ export const generateNftSvg = async (
 <text text-rendering="optimizeSpeed"><textPath startOffset="-100%" href="#A" class="B C D E"><animate additive="sum" attributeName="startOffset" begin="0s" dur="50s" from="0%" repeatCount="indefinite" to="100%"/>Coindrip Protocol / Token Stream #${streamId}</textPath><textPath startOffset="0%" href="#A" class="B C D E"><animate additive="sum" attributeName="startOffset" begin="0s" dur="50s" from="0%" repeatCount="indefinite" to="100%"/>Coindrip Protocol / Token Stream #${streamId}</textPath><textPath startOffset="-50%" href="#A" class="B C D E"><animate additive="sum" attributeName="startOffset" begin="0s" dur="50s" from="0%" repeatCount="indefinite" to="100%"/>Coindrip Protocol / Token Stream #${streamId}</textPath><textPath startOffset="50%" href="#A" class="B C D E"><animate additive="sum" attributeName="startOffset" begin="0s" dur="50s" from="0%" repeatCount="indefinite" to="100%"/>Coindrip Protocol / Token Stream #${streamId}</textPath></text></svg>
   `);
 };
+
+const seedRand = (hash: string, range: [number, number]) => {
+  const seed = createHash("sha1").update(hash).digest().readUInt32BE();
+
+  const rng = prand.xoroshiro128plus(seed);
+  return prand.unsafeUniformIntDistribution(range[0], range[1], rng);
+};
+
+function generateRandomHSLColor(seed: string, alpha = 1) {
+  // Generate random values for H, S, and L within a reasonable range
+  const randomH = seedRand(seed, [138, 218]);
+  const randomS = seedRand(seed, [90, 100]);
+  const randomL = seedRand(seed, [40, 60]);
+
+  // Convert the random values back to HSL string
+  const randomHSL = `hsla(${randomH}, ${randomS}%, ${randomL}%, ${alpha})`;
+
+  return randomHSL;
+}

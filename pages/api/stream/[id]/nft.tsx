@@ -18,6 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const durationInDays = moment(streamData.stream.end_time).diff(moment(streamData.stream.start_time), "days");
   const svg = await generateNftSvg(
+    streamData.tx_hash,
     streamData.id,
     streamData.stream.payment.token_identifier,
     streamData.stream.can_cancel,
