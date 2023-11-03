@@ -30,7 +30,7 @@ class StreamingContract extends Contract<typeof coindripAbi> {
       );
     }
 
-    return this.interceptInteraction(interaction, 200_000_000);
+    return this.interceptInteraction(interaction, 20_000_000);
   }
 
   async getStream(streamId: number) {
