@@ -1,4 +1,3 @@
-import { createHash } from "crypto";
 import prand from "pure-rand";
 import svgSlim from "svg-slimming";
 
@@ -9,8 +8,8 @@ export const generateNftSvg = async (
   canCancel: boolean,
   duration: number
 ): Promise<string> => {
-  const streamBaseColor = generateRandomHSLColor(seed);
-  const streamBaseColorSecondary = generateRandomHSLColor(seed, 0.6);
+  const streamBaseColor = await generateRandomHSLColor(seed);
+  const streamBaseColorSecondary = await generateRandomHSLColor(seed, 0.6);
 
   const durationString = duration === 0 ? "&lt; 1 Day" : duration === 1 ? "1 Day" : `${duration} Days`;
   return svgSlim(`<svg xmlns="http://www.w3.org/2000/svg"
@@ -88,18 +87,18 @@ export const generateNftSvg = async (
   `);
 };
 
-const seedRand = (hash: string, range: [number, number]) => {
-  const seed = createHash("sha1").update(hash).digest().readUInt32BE();
-
+const seedRand = async (hash: string, range: [number, number]) => {
+  const res = await crypto.subtle.digest("SHA-256", Buffer.from(hash));
+  const seed = new Uint32Array(res)[0];
   const rng = prand.xoroshiro128plus(seed);
   return prand.unsafeUniformIntDistribution(range[0], range[1], rng);
 };
 
-function generateRandomHSLColor(seed: string, alpha = 1) {
+async function generateRandomHSLColor(seed: string, alpha = 1) {
   // Generate random values for H, S, and L within a reasonable range
-  const randomH = seedRand(seed, [138, 218]);
-  const randomS = seedRand(seed, [90, 100]);
-  const randomL = seedRand(seed, [40, 60]);
+  const randomH = await seedRand(seed, [138, 218]);
+  const randomS = await seedRand(seed, [90, 100]);
+  const randomL = await seedRand(seed, [40, 60]);
 
   // Convert the random values back to HSL string
   const randomHSL = `hsla(${randomH}, ${randomS}%, ${randomL}%, ${alpha})`;
