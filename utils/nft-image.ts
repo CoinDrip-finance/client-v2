@@ -96,7 +96,7 @@ const seedRand = async (hash: string, range: [number, number]) => {
 
 async function generateRandomHSLColor(seed: string, alpha = 1) {
   // Generate random values for H, S, and L within a reasonable range
-  const randomH = await seedRand(seed, [138, 218]);
+  const randomH = await seedRand(seed, [0, 360]);
   const randomS = await seedRand(seed, [90, 100]);
   const randomL = await seedRand(seed, [40, 60]);
 
