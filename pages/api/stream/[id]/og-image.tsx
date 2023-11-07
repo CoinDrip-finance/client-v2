@@ -14,7 +14,9 @@ const handler: NextApiHandler = async (req) => {
   try {
     const { searchParams } = new URL(req.url!);
     const id = searchParams.get("id");
-    const imageData = await fetch(new URL("./og_base.png", import.meta.url)).then((res) => res.arrayBuffer());
+    const imageData = await fetch(new URL("./og_base.png", import.meta.url).toString()).then((res) =>
+      res.arrayBuffer()
+    );
     if (!id) {
       return new ImageResponse(
         (
@@ -29,7 +31,7 @@ const handler: NextApiHandler = async (req) => {
               position: "relative",
             }}
           >
-            <img width="1200" height="650" src={imageData} />
+            <img width="1200" height="650" src={`data:image/png;base64,${Buffer.from(imageData).toString("base64")}`} />
           </div>
         ),
         {
@@ -57,7 +59,7 @@ const handler: NextApiHandler = async (req) => {
             position: "relative",
           }}
         >
-          <img width="1200" height="650" src={imageData} />
+          <img width="1200" height="650" src={`data:image/png;base64,${Buffer.from(imageData).toString("base64")}`} />
 
           <div
             style={{

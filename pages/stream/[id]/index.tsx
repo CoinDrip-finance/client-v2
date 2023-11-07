@@ -76,7 +76,19 @@ const StreamDetails: NextPage = () => {
 
   return (
     <Layout>
-      <NextSeo title={`Stream #${data.id}`} />
+      <NextSeo
+        title={`Stream #${data.id}`}
+        openGraph={{
+          images: [
+            {
+              url: `https://devnet-v2.coindrip.finance/api/stream/${data.id}/og-image`,
+              width: 1200,
+              height: 650,
+              type: "image/png",
+            },
+          ],
+        }}
+      />
       <BackButtonWrapper href={homePath} size="max-w-screen-md">
         <Overview data={data} tokenIcon={paymentTokenImage} />
 
