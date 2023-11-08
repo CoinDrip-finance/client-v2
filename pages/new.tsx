@@ -1,25 +1,27 @@
-import { useAuth } from '@elrond-giants/erd-react-hooks';
-import { AcademicCapIcon, InformationCircleIcon, LockClosedIcon } from '@heroicons/react/24/outline';
-import { joiResolver } from '@hookform/resolvers/joi';
-import Joi from 'joi';
-import { NextSeo } from 'next-seo';
-import { useRouter } from 'next/router';
-import { useEffect, useMemo, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useAuth } from "@elrond-giants/erd-react-hooks";
+import { AcademicCapIcon, InformationCircleIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import { joiResolver } from "@hookform/resolvers/joi";
+import { TokenTransfer } from "@multiversx/sdk-core/out";
+import Joi from "joi";
+import { NextSeo } from "next-seo";
+import { useRouter } from "next/router";
+import { useEffect, useMemo, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 
-import { StreamItemType } from '../components/gallery/StreamTypeItem';
-import AmountInput from '../components/new_stream/AmountInput';
-import DurationInput from '../components/new_stream/DurationInput';
-import RecipientInput from '../components/new_stream/RecipientInput';
-import TokenSelect, { EsdtToken } from '../components/new_stream/TokenSelect';
-import RequiresAuth from '../components/RequiresAuth';
-import BackButtonWrapper from '../components/shared/BackWrapper';
-import Layout from '../components/shared/Layout';
-import { useTransaction } from '../hooks/useTransaction';
-import { ICreateStream, StreamType } from '../types';
-import StreamingContract from '../utils/contracts/streamContract';
-import { galleryPath, streamDetailsPath } from '../utils/routes';
-import { streamTypes } from './gallery';
+import { StreamItemType } from "../components/gallery/StreamTypeItem";
+import AmountInput from "../components/new_stream/AmountInput";
+import DurationInput from "../components/new_stream/DurationInput";
+import RecipientInput from "../components/new_stream/RecipientInput";
+import TokenSelect, { EsdtToken } from "../components/new_stream/TokenSelect";
+import RequiresAuth from "../components/RequiresAuth";
+import BackButtonWrapper from "../components/shared/BackWrapper";
+import Layout from "../components/shared/Layout";
+import { useTransaction } from "../hooks/useTransaction";
+import { ICreateStream, StreamType } from "../types";
+import StreamingContract from "../utils/contracts/streamContract";
+import { Segments } from "../utils/models/Segments";
+import { galleryPath, streamDetailsPath } from "../utils/routes";
+import { streamTypes } from "./gallery";
 
 import type { NextPage } from "next";
 const Home: NextPage = () => {
@@ -77,10 +79,19 @@ const Home: NextPage = () => {
     try {
       setLoading(true);
 
+      const segments = new Segments({
+        duration: formData.duration,
+        amount: TokenTransfer.egldFromAmount(formData.amount).toString(),
+        exponent: {
+          numerator: 1,
+          denominator: 1,
+        },
+      });
+
       const streamingContract = new StreamingContract(address);
-      const interaction = streamingContract.createStreamByDuration(
+      const interaction = streamingContract.createStreamNow(
         formData.recipient,
-        formData.duration,
+        segments,
         formData?.cliff || 0,
         formData.can_cancel,
         {

@@ -18,7 +18,12 @@
   },
   "name": "CoinDrip",
   "constructor": {
-    "inputs": [],
+    "inputs": [
+      {
+        "name": "nft_base_uri",
+        "type": "bytes"
+      }
+    ],
     "outputs": []
   },
   "endpoints": [
@@ -53,7 +58,7 @@
       ]
     },
     {
-      "name": "createStreamDuration",
+      "name": "createStreamNow",
       "mutability": "mutable",
       "payableInTokens": ["*"],
       "inputs": [
@@ -62,8 +67,8 @@
           "type": "Address"
         },
         {
-          "name": "duration",
-          "type": "u64"
+          "name": "segments",
+          "type": "List<Segment>"
         },
         {
           "name": "cliff_opt",
@@ -101,8 +106,8 @@
           "type": "u64"
         },
         {
-          "name": "end_time",
-          "type": "u64"
+          "name": "segments",
+          "type": "List<Segment>"
         },
         {
           "name": "cliff_opt",
@@ -129,14 +134,13 @@
     {
       "docs": [
         "",
-        "Calculates the recipient balance based on the amount stream so far and the already claimed amount",
-        "|xxxx|*******|--|",
+        "Calculates the entire streamed amount until the current time",
+        "|************|--|",
         "S            C  E",
         "S = start time",
-        "xxxx = already claimed amount",
         "C = current time",
         "E = end time",
-        "The zone marked with \"****...\" represents the recipient balance"
+        "The zone marked with \"****...\" represents the streamed amount"
       ],
       "name": "streamedAmount",
       "mutability": "readonly",

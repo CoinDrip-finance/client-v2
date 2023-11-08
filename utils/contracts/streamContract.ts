@@ -3,6 +3,7 @@ import { Address, BooleanValue, TokenTransfer, U64Value } from "@multiversx/sdk-
 import { contractAddress, streamsNftCollection } from "../../config";
 import { CreateStreamPayment } from "../../types";
 import coindripAbi from "../coindrip.abi.json";
+import { Segments } from "../models/Segments";
 import Contract from "./contract";
 
 class StreamingContract extends Contract<typeof coindripAbi> {
@@ -13,15 +14,15 @@ class StreamingContract extends Contract<typeof coindripAbi> {
     if (sender) this.sender = new Address(sender);
   }
 
-  createStreamByDuration(
+  createStreamNow(
     recipient: string,
-    duration: number,
+    segments: Segments,
     cliff: number,
     canCancel: boolean,
     payment: CreateStreamPayment
   ) {
-    const params = [new Address(recipient), new U64Value(duration), new U64Value(cliff), new BooleanValue(canCancel)];
-    let interaction = this.contract.methods.createStreamDuration(params);
+    const params = [new Address(recipient), segments.toList(), new U64Value(cliff), new BooleanValue(canCancel)];
+    let interaction = this.contract.methods.createStreamNow(params);
     if (payment.token_identifier === "EGLD") {
       interaction.withValue(TokenTransfer.egldFromAmount(payment.amount));
     } else {

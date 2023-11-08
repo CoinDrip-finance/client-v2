@@ -101,3 +101,12 @@ export interface IStreamResponse {
     url: string;
   };
 }
+
+export interface ISegment {
+  amount: string;
+  exponent: {
+    numerator: number;
+    denominator: number;
+  };
+  duration: number;
+}
