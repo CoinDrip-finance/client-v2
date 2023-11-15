@@ -1,11 +1,13 @@
-import { useAuth } from "@elrond-giants/erd-react-hooks/dist";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { useAuth } from '@elrond-giants/erd-react-hooks/dist';
+import { ArrowTopRightOnSquareIcon, QrCodeIcon } from '@heroicons/react/24/outline';
+import axios from 'axios';
+import isMobile from 'is-mobile';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 
-import { network } from "../../config";
-import { classNames, getShortAddress } from "../../utils/presentation";
+import { network } from '../../config';
+import { classNames, getShortAddress } from '../../utils/presentation';
+import ScanAddressModal from './ScanAddressModal';
 
 const getHeroTagByAdress = async (address: string): Promise<string | null> => {
   try {
@@ -37,6 +39,8 @@ export default function RecipientInput() {
   const [recipientInputValue, setRecipientInputValue] = useState<string>();
   const [recipientAddress, setRecipientAddress] = useState<string>();
   const [recipientHeroTag, setRecipientHeroTag] = useState<string>();
+  const [scanQrOpen, setScanQrOpen] = useState(false);
+  const inputRef = useRef(null);
 
   const isAddress = useMemo(() => {
     return recipientInputValue?.startsWith("erd1");
@@ -82,9 +86,10 @@ export default function RecipientInput() {
       <div className="relative w-full">
         <input
           type="text"
+          ref={inputRef}
           className={classNames(
             "bg-neutral-950 rounded-lg border border-neutral-900 focus:border-neutral-900 h-12 font-medium text-sm focus:outline-none pl-4 w-full",
-            displayAdditionalInfo ? "pr-36" : "pr-4"
+            displayAdditionalInfo ? "pr-36" : isMobile() ? "pr-12" : "pr-4"
           )}
           onBlur={({ target: { value } }) => setRecipientInputValue(value)}
         />
@@ -93,7 +98,10 @@ export default function RecipientInput() {
           <a
             href={`${network.explorerAddress}/accounts/${recipientAddress}`}
             target="_blank"
-            className="h-8 absolute right-2 rounded-lg text-sm px-2 mt-2 bg-neutral-800 font-light text-neutral-400 inline-flex items-center"
+            className={classNames(
+              "h-8 absolute rounded-lg text-sm px-2 mt-2 bg-neutral-800 font-light text-neutral-400 inline-flex items-center",
+              isMobile() ? "right-12" : "right-2"
+            )}
             rel="noreferrer"
           >
             {isAddress
@@ -102,7 +110,26 @@ export default function RecipientInput() {
             <ArrowTopRightOnSquareIcon className="ml-2 w-3 h-3" />
           </a>
         )}
+
+        {isMobile() && (
+          <div className="h-8 absolute right-2 rounded-lg px-1 top-2 bg-neutral-800">
+            <QrCodeIcon className="h-6 mt-1 text-neutral-400 " onClick={() => setScanQrOpen(true)} />
+          </div>
+        )}
       </div>
+
+      <ScanAddressModal
+        open={scanQrOpen}
+        onClose={(address) => {
+          if (address) {
+            setRecipientInputValue(address);
+            // @ts-ignore
+            inputRef.current.value = address;
+          }
+
+          setScanQrOpen(false);
+        }}
+      />
     </div>
   );
 }

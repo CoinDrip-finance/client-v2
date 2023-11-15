@@ -11,6 +11,7 @@ export interface ICreateStream {
   recipient: string;
   can_cancel: boolean;
   cliff?: number;
+  steps_count?: number;
 }
 
 export enum StreamType {

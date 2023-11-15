@@ -1,27 +1,29 @@
-import { useAuth } from "@elrond-giants/erd-react-hooks";
-import { AcademicCapIcon, InformationCircleIcon, LockClosedIcon } from "@heroicons/react/24/outline";
-import { joiResolver } from "@hookform/resolvers/joi";
-import { TokenTransfer } from "@multiversx/sdk-core/out";
-import Joi from "joi";
-import { NextSeo } from "next-seo";
-import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { useAuth } from '@elrond-giants/erd-react-hooks';
+import { AcademicCapIcon, InformationCircleIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { joiResolver } from '@hookform/resolvers/joi';
+import { TokenTransfer } from '@multiversx/sdk-core/out';
+import BigNumber from 'bignumber.js';
+import Joi from 'joi';
+import { NextSeo } from 'next-seo';
+import { useRouter } from 'next/router';
+import { useEffect, useMemo, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
-import { StreamItemType } from "../components/gallery/StreamTypeItem";
-import AmountInput from "../components/new_stream/AmountInput";
-import DurationInput from "../components/new_stream/DurationInput";
-import RecipientInput from "../components/new_stream/RecipientInput";
-import TokenSelect, { EsdtToken } from "../components/new_stream/TokenSelect";
-import RequiresAuth from "../components/RequiresAuth";
-import BackButtonWrapper from "../components/shared/BackWrapper";
-import Layout from "../components/shared/Layout";
-import { useTransaction } from "../hooks/useTransaction";
-import { ICreateStream, StreamType } from "../types";
-import StreamingContract from "../utils/contracts/streamContract";
-import { Segments } from "../utils/models/Segments";
-import { galleryPath, streamDetailsPath } from "../utils/routes";
-import { streamTypes } from "./gallery";
+import { StreamItemType } from '../components/gallery/StreamTypeItem';
+import AmountInput from '../components/new_stream/AmountInput';
+import DurationInput from '../components/new_stream/DurationInput';
+import NumberInput from '../components/new_stream/NumberInput';
+import RecipientInput from '../components/new_stream/RecipientInput';
+import TokenSelect, { EsdtToken } from '../components/new_stream/TokenSelect';
+import RequiresAuth from '../components/RequiresAuth';
+import BackButtonWrapper from '../components/shared/BackWrapper';
+import Layout from '../components/shared/Layout';
+import { useTransaction } from '../hooks/useTransaction';
+import { ICreateStream, StreamType } from '../types';
+import StreamingContract from '../utils/contracts/streamContract';
+import { Segments } from '../utils/models/Segments';
+import { galleryPath, streamDetailsPath } from '../utils/routes';
+import { streamTypes } from './gallery';
 
 import type { NextPage } from "next";
 const Home: NextPage = () => {
@@ -45,6 +47,7 @@ const Home: NextPage = () => {
     amount: Joi.number().positive().required(),
     duration: Joi.number().positive().required(),
     cliff: Joi.number().positive().max(Joi.ref("duration")),
+    steps_count: Joi.number().positive().integer(),
     can_cancel: Joi.boolean(),
   });
   const formMethods = useForm<ICreateStream>({
@@ -78,15 +81,47 @@ const Home: NextPage = () => {
 
     try {
       setLoading(true);
-
-      const segments = new Segments({
-        duration: formData.duration,
-        amount: TokenTransfer.egldFromAmount(formData.amount).toString(),
-        exponent: {
-          numerator: 1,
-          denominator: 1,
-        },
-      });
+      const amountBigNumber = new BigNumber(formData.amount).shiftedBy(selectedToken?.decimals || 18);
+      let segments;
+      if (isStepsType && formData?.steps_count) {
+        const segmentDuration = formData.duration / formData.steps_count;
+        const segmentAmount = amountBigNumber.div(formData.steps_count);
+        segments = new Segments({
+          duration: segmentDuration,
+          amount: "0",
+          exponent: {
+            numerator: 0,
+            denominator: 1,
+          },
+        });
+        for (let i = 0; i < formData.steps_count - 1; i++) {
+          segments.add({
+            duration: segmentDuration,
+            amount: segmentAmount.toString(),
+            exponent: {
+              numerator: 0,
+              denominator: 1,
+            },
+          });
+        }
+        segments.add({
+          duration: 1,
+          amount: segmentAmount.toString(),
+          exponent: {
+            numerator: 0,
+            denominator: 1,
+          },
+        });
+      } else {
+        segments = new Segments({
+          duration: formData.duration,
+          amount: TokenTransfer.egldFromAmount(formData.amount).toString(),
+          exponent: {
+            numerator: 1,
+            denominator: 1,
+          },
+        });
+      }
 
       const streamingContract = new StreamingContract(address);
       const interaction = streamingContract.createStreamNow(
@@ -122,6 +157,10 @@ const Home: NextPage = () => {
     return streamType?.id === StreamType.CliffLinear;
   }, [streamType?.id]);
 
+  const isStepsType = useMemo(() => {
+    return streamType?.id === StreamType.Steps;
+  }, [streamType?.id]);
+
   return (
     <RequiresAuth>
       <Layout>
@@ -150,6 +189,8 @@ const Home: NextPage = () => {
                 <DurationInput label="Duration" formId="duration" />
 
                 {isCliffType && <DurationInput label="Cliff" formId="cliff" />}
+
+                {isStepsType && <NumberInput label="Steps Count" formId="steps_count" />}
 
                 <div className="font-light text-sm flex items-center">
                   <input

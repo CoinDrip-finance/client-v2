@@ -11,7 +11,7 @@ export default function StreamsTable({ streams }: { streams: IStreamResource[] }
             <th>from/to</th>
             <th>value</th>
             <th>timeline</th>
-            <th>streamed</th>
+            <th>progress</th>
           </tr>
         </thead>
         <tbody>
