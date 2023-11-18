@@ -88,10 +88,7 @@ const Home: NextPage = () => {
         segments = new Segments({
           duration: formData.duration,
           amount: amountBigNumber.toString(),
-          exponent: {
-            numerator: 1,
-            denominator: 1,
-          },
+          exponent: 1,
         });
       }
 

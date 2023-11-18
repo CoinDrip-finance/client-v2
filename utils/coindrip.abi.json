@@ -385,6 +385,11 @@
           "name": "cliff",
           "type": "u64",
           "indexed": true
+        },
+        {
+          "name": "segments",
+          "type": "List<Segment>",
+          "indexed": true
         }
       ]
     },
@@ -477,19 +482,6 @@
         }
       ]
     },
-    "Exponent": {
-      "type": "struct",
-      "fields": [
-        {
-          "name": "numerator",
-          "type": "u32"
-        },
-        {
-          "name": "denominator",
-          "type": "u32"
-        }
-      ]
-    },
     "Segment": {
       "type": "struct",
       "fields": [
@@ -499,7 +491,7 @@
         },
         {
           "name": "exponent",
-          "type": "Exponent"
+          "type": "u32"
         },
         {
           "name": "duration",

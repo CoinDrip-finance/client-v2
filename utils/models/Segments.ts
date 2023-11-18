@@ -18,14 +18,9 @@ import { ICreateStream, ISegment } from '../../types';
 
 BigNumber.config({ EXPONENTIAL_AT: 19 });
 
-const structTypeExponent = new StructType("Exponent", [
-  new FieldDefinition("numerator", "numerator", new U32Type()),
-  new FieldDefinition("denominator", "denominator", new U32Type()),
-]);
-
 const structTypeSegment = new StructType("Segment", [
   new FieldDefinition("amount", "amount", new BigUIntType()),
-  new FieldDefinition("exponent", "exponent", structTypeExponent),
+  new FieldDefinition("exponent", "exponent", new U32Type()),
   new FieldDefinition("duration", "duration", new U64Type()),
 ]);
 
@@ -50,13 +45,9 @@ export class Segments {
 
   toList() {
     const segmentStructs = this.segments.map((segment) => {
-      const exponent = new Struct(structTypeExponent, [
-        new Field(new U32Value(segment.exponent.numerator), "numerator"),
-        new Field(new U32Value(segment.exponent.denominator), "denominator"),
-      ]);
       return new Struct(structTypeSegment, [
         new Field(new BigUIntValue(segment.amount), "amount"),
-        new Field(exponent, "exponent"),
+        new Field(new U32Value(segment.exponent), "exponent"),
         new Field(new U64Value(segment.duration), "duration"),
       ]);
     });
@@ -72,32 +63,29 @@ export class Segments {
     const segmentAmount = amount.div(segmentsCount).integerValue(BigNumber.ROUND_DOWN);
     const segmentAmountError = amount.minus(segmentAmount.times(segmentsCount));
 
-    const segments = new Segments({
-      duration: segmentDuration,
-      amount: "0",
-      exponent: {
-        numerator: 0,
-        denominator: 1,
-      },
-    });
-    for (let i = 0; i < segmentsCount - 1; i++) {
+    const segments = new Segments();
+
+    for (let i = 1; i <= segmentsCount; i++) {
       segments.add({
-        duration: segmentDuration,
-        amount: segmentAmount.toString(),
-        exponent: {
-          numerator: 0,
-          denominator: 1,
-        },
+        duration: segmentDuration - 1,
+        amount: "0",
+        exponent: 1,
       });
+
+      if (i === segmentsCount) {
+        segments.add({
+          duration: 1 + segmentDurationError,
+          amount: segmentAmount.plus(segmentAmountError).toString(),
+          exponent: 1,
+        });
+      } else {
+        segments.add({
+          duration: 1,
+          amount: segmentAmount.toString(),
+          exponent: 1,
+        });
+      }
     }
-    segments.add({
-      duration: segmentDurationError || 1,
-      amount: segmentAmount.plus(segmentAmountError).toString(),
-      exponent: {
-        numerator: 0,
-        denominator: 1,
-      },
-    });
 
     return segments;
   }

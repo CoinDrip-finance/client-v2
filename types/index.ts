@@ -106,9 +106,6 @@ export interface IStreamResponse {
 
 export interface ISegment {
   amount: string;
-  exponent: {
-    numerator: number;
-    denominator: number;
-  };
+  exponent: number;
   duration: number;
 }
