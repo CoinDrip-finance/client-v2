@@ -1,7 +1,6 @@
 import { useAuth } from '@elrond-giants/erd-react-hooks';
 import { AcademicCapIcon, InformationCircleIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { joiResolver } from '@hookform/resolvers/joi';
-import { TokenTransfer } from '@multiversx/sdk-core/out';
 import BigNumber from 'bignumber.js';
 import Joi from 'joi';
 import { NextSeo } from 'next-seo';
@@ -84,38 +83,11 @@ const Home: NextPage = () => {
       const amountBigNumber = new BigNumber(formData.amount).shiftedBy(selectedToken?.decimals || 18);
       let segments;
       if (isStepsType && formData?.steps_count) {
-        const segmentDuration = formData.duration / formData.steps_count;
-        const segmentAmount = amountBigNumber.div(formData.steps_count);
-        segments = new Segments({
-          duration: segmentDuration,
-          amount: "0",
-          exponent: {
-            numerator: 0,
-            denominator: 1,
-          },
-        });
-        for (let i = 0; i < formData.steps_count - 1; i++) {
-          segments.add({
-            duration: segmentDuration,
-            amount: segmentAmount.toString(),
-            exponent: {
-              numerator: 0,
-              denominator: 1,
-            },
-          });
-        }
-        segments.add({
-          duration: 1,
-          amount: segmentAmount.toString(),
-          exponent: {
-            numerator: 0,
-            denominator: 1,
-          },
-        });
+        segments = Segments.fromNewStream(formData, amountBigNumber);
       } else {
         segments = new Segments({
           duration: formData.duration,
-          amount: TokenTransfer.egldFromAmount(formData.amount).toString(),
+          amount: amountBigNumber.toString(),
           exponent: {
             numerator: 1,
             denominator: 1,

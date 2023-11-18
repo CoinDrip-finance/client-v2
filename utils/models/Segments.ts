@@ -11,9 +11,12 @@ import {
   U32Value,
   U64Type,
   U64Value,
-} from "@multiversx/sdk-core";
+} from '@multiversx/sdk-core';
+import BigNumber from 'bignumber.js';
 
-import { ISegment } from "../../types";
+import { ICreateStream, ISegment } from '../../types';
+
+BigNumber.config({ EXPONENTIAL_AT: 19 });
 
 const structTypeExponent = new StructType("Exponent", [
   new FieldDefinition("numerator", "numerator", new U32Type()),
@@ -59,5 +62,43 @@ export class Segments {
     });
 
     return new List(listTypeSegments, segmentStructs);
+  }
+
+  static fromNewStream(streamData: ICreateStream, amount: BigNumber): Segments {
+    const segmentsCount: number = streamData.steps_count!;
+    const segmentDuration = Math.floor(streamData.duration / segmentsCount);
+    const segmentDurationError = streamData.duration - segmentDuration * segmentsCount;
+
+    const segmentAmount = amount.div(segmentsCount).integerValue(BigNumber.ROUND_DOWN);
+    const segmentAmountError = amount.minus(segmentAmount.times(segmentsCount));
+
+    const segments = new Segments({
+      duration: segmentDuration,
+      amount: "0",
+      exponent: {
+        numerator: 0,
+        denominator: 1,
+      },
+    });
+    for (let i = 0; i < segmentsCount - 1; i++) {
+      segments.add({
+        duration: segmentDuration,
+        amount: segmentAmount.toString(),
+        exponent: {
+          numerator: 0,
+          denominator: 1,
+        },
+      });
+    }
+    segments.add({
+      duration: segmentDurationError || 1,
+      amount: segmentAmount.plus(segmentAmountError).toString(),
+      exponent: {
+        numerator: 0,
+        denominator: 1,
+      },
+    });
+
+    return segments;
   }
 }
