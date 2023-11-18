@@ -93,6 +93,7 @@ export interface IStreamResponse {
       recipient_balance?: string;
       streamed_until_cancel?: string;
     };
+    segments: ISegment[];
   };
   nft?: {
     collection: string;

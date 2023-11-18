@@ -1,15 +1,15 @@
-import axios from "axios";
-import BigNumber from "bignumber.js";
-import { NextApiRequest } from "next";
+import axios from 'axios';
+import BigNumber from 'bignumber.js';
+import { NextApiRequest } from 'next';
 
-import { nonceToHex } from "../apis/nfts";
-import { ClaimsRepository } from "../repositories/ClaimsRepository";
-import { StreamsRepository } from "../repositories/StreamsRepository";
-import { IStreamResponse } from "../types";
-import StreamingContract from "../utils/contracts/streamContract";
-import { network, streamsNftCollection } from "./../config";
-import ApiResponse from "./_base/ApiResponse";
-import BaseAction from "./_base/BaseAction";
+import { nonceToHex } from '../apis/nfts';
+import { ClaimsRepository } from '../repositories/ClaimsRepository';
+import { StreamsRepository } from '../repositories/StreamsRepository';
+import { IStreamResponse } from '../types';
+import StreamingContract from '../utils/contracts/streamContract';
+import { network, streamsNftCollection } from './../config';
+import ApiResponse from './_base/ApiResponse';
+import BaseAction from './_base/BaseAction';
 
 const getStreamNft = async (nonce: number) => {
   const { data } = await axios.get(`${network.apiAddress}/nfts/${streamsNftCollection}-${nonceToHex(nonce)}`);
@@ -52,6 +52,7 @@ export default class GetStreamAction extends BaseAction {
         end_time: streamFromDb?.end_time!,
         can_cancel: streamFromDb?.can_cancel!,
         cliff: streamFromDb?.cliff!,
+        segments: JSON.parse(streamFromDb?.segments),
       },
     };
 
