@@ -1,22 +1,24 @@
-import { useAuth } from "@elrond-giants/erd-react-hooks";
-import axios from "axios";
-import { NextSeo } from "next-seo";
-import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
-import useSWR from "swr";
+import { useAuth } from '@elrond-giants/erd-react-hooks';
+import { ParentSize } from '@visx/responsive';
+import axios from 'axios';
+import { NextSeo } from 'next-seo';
+import { useRouter } from 'next/router';
+import { useEffect, useMemo, useState } from 'react';
+import useSWR from 'swr';
 
-import BackButtonWrapper from "../../../components/shared/BackWrapper";
-import Layout from "../../../components/shared/Layout";
-import Nft from "../../../components/stream_details/Nft";
-import Overview from "../../../components/stream_details/Overview";
-import SenderRecipientDetails from "../../../components/stream_details/SenderRecipient";
-import StreamActions from "../../../components/stream_details/StreamActions";
-import StreamProgressBars from "../../../components/stream_details/StreamProgressBars";
-import StreamProps from "../../../components/stream_details/StreamProps";
-import { network } from "../../../config";
-import { useTransaction } from "../../../hooks/useTransaction";
-import { IStreamResponse } from "../../../types";
-import { homePath } from "../../../utils/routes";
+import BackButtonWrapper from '../../../components/shared/BackWrapper';
+import Layout from '../../../components/shared/Layout';
+import Nft from '../../../components/stream_details/Nft';
+import Overview from '../../../components/stream_details/Overview';
+import SenderRecipientDetails from '../../../components/stream_details/SenderRecipient';
+import StreamActions from '../../../components/stream_details/StreamActions';
+import StreamChart from '../../../components/stream_details/StreamChart';
+import StreamProgressBars from '../../../components/stream_details/StreamProgressBars';
+import StreamProps from '../../../components/stream_details/StreamProps';
+import { network } from '../../../config';
+import { useTransaction } from '../../../hooks/useTransaction';
+import { IStreamResponse } from '../../../types';
+import { homePath } from '../../../utils/routes';
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
@@ -99,6 +101,8 @@ const StreamDetails: NextPage = () => {
         <StreamProgressBars data={data} />
 
         <StreamActions data={data} refresh={mutate} />
+
+        <ParentSize>{({ width, height }) => <StreamChart width={width} height={300} stream={data} />}</ParentSize>
 
         <Nft data={data} />
       </BackButtonWrapper>
