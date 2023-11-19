@@ -109,3 +109,11 @@ export interface ISegment {
   exponent: number;
   duration: number;
 }
+
+export interface IChartSegment extends ISegment {
+  startDate: moment.Moment;
+  endDate: moment.Moment;
+  startAmount: number;
+  endAmount: number;
+  denominatedAmount: number;
+}
