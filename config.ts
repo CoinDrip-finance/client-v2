@@ -14,3 +14,4 @@ export const egldLabel = process.env.NEXT_PUBLIC_EGLD_LABEL ?? "xEGLD";
 export const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ?? "";
 export const streamsNftCollection = process.env.NEXT_PUBLIC_NFT_COLLECTION ?? "";
 export const xoxnoUrl = process.env.NEXT_PUBLIC_XOXNO_URL ?? "";
+export const mediaUrl = process.env.NEXT_PUBLIC_MEDIA_URL ?? "";

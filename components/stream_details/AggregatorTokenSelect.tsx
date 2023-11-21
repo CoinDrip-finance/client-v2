@@ -4,8 +4,16 @@ import { Combobox } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { useEffect, useMemo, useState } from 'react';
 
-import { chainId } from '../../config';
+import { chainId, mediaUrl } from '../../config';
 import { classNames } from '../../utils/presentation';
+
+const getTokenMediaUrl = (token: string) => {
+  if (token === "EGLD") {
+    return "/new_stream/egld_icon.png";
+  }
+
+  return `${mediaUrl}/tokens/asset/${token}/logo.png`;
+};
 
 export default function AggregatorTokenSelect({
   defaultToken,
@@ -70,7 +78,7 @@ export default function AggregatorTokenSelect({
         <div className="relative mt-1">
           <Combobox.Button className="w-full">
             <Combobox.Input
-              className="block w-full cursor-pointer rounded-lg bg-neutral-800 px-8 h-12 text-white font-medium text-sm border border-neutral-700 border:border-neutral-800 focus:border-neutral-800 focus:outline-none"
+              className="block w-full cursor-pointer rounded-lg bg-neutral-800 px-12 h-12 text-white font-medium text-sm border border-neutral-700 border:border-neutral-800 focus:border-neutral-800 focus:outline-none"
               onChange={(event) => setQuery(event.target.value)}
               displayValue={(token: string) => token}
               autoComplete="false"
@@ -81,6 +89,12 @@ export default function AggregatorTokenSelect({
             </div>
           </Combobox.Button>
 
+          {selectedPerson && (
+            <div className="absolute inset-y-0 left-4 flex items-center">
+              <img src={getTokenMediaUrl(selectedPerson)} alt="" className="h-6 w-6 rounded-full" />
+            </div>
+          )}
+
           {filteredPeople.length > 0 && (
             <Combobox.Options className="absolute z-50 mt-1 max-h-56 w-full overflow-auto rounded-lg bg-neutral-800 py-1 text-sm shadow-lg ring-1 ring-neutral-700 focus:outline-none font-medium">
               {filteredPeople.map((token) => (
@@ -89,7 +103,7 @@ export default function AggregatorTokenSelect({
                   value={token}
                   className={({ active }) =>
                     classNames(
-                      "relative cursor-pointer select-none py-2 pl-8 pr-9",
+                      "relative cursor-pointer select-none py-2 pl-4 pr-9",
                       active ? "text-white" : "text-neutral-400"
                     )
                   }
@@ -97,6 +111,7 @@ export default function AggregatorTokenSelect({
                   {({ active, selected }) => (
                     <>
                       <div className="flex items-center">
+                        <img src={getTokenMediaUrl(token)} alt="" className="h-6 w-6 flex-shrink-0 rounded-full mr-3" />
                         <span className={classNames("truncate", selected ? "text-white" : "")}>{token}</span>
                       </div>
 
