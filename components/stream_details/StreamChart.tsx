@@ -77,12 +77,12 @@ const generatePointsFromSegments = (cliff: number, segments: IChartSegment[]): A
   segments.forEach((segment) => {
     for (let i = 0; i <= 100; i++) {
       const pointDuration = (i * segment.duration) / 100;
-      const pointAmount = (i * segment.denominatedAmount) / 100;
+      const pointAmount = Math.pow(i / 100, segment.exponent) * segment.denominatedAmount;
       const pointDate = segment.startDate.clone().add(pointDuration, "s");
       if (pointDate > cliffEnd) {
         points.push({
           date: pointDate.toString(),
-          close: parseFloat((segment.startAmount + pointAmount).toFixed(2)),
+          close: segment.startAmount + pointAmount,
         });
       } else {
         points.push({
@@ -247,7 +247,7 @@ export default withTooltip<AreaProps & { stream: IStreamResponse }, TooltipData>
         {tooltipData && (
           <div>
             <TooltipWithBounds key={Math.random()} top={tooltipTop - 60} left={tooltipLeft} style={tooltipStyles}>
-              {`${getStockValue(tooltipData)} ${stream.stream.payment.token_name}`}
+              {`${getStockValue(tooltipData).toFixed(2)} ${stream.stream.payment.token_name}`}
             </TooltipWithBounds>
             <Tooltip
               top={innerHeight + margin.top - 4}

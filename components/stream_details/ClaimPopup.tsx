@@ -1,24 +1,18 @@
-import { useAuth } from "@elrond-giants/erd-react-hooks/dist";
-import {
-  ArrowDownTrayIcon,
-  BanknotesIcon,
-  ChartPieIcon,
-  ClockIcon,
-  KeyIcon,
-  WalletIcon,
-} from "@heroicons/react/24/outline";
-import moment from "moment";
-import { useEffect, useMemo, useState } from "react";
-import Moment from "react-moment";
+import { useAuth } from '@elrond-giants/erd-react-hooks/dist';
+import { ArrowDownTrayIcon, BanknotesIcon, ChartPieIcon, ClockIcon, KeyIcon, WalletIcon } from '@heroicons/react/24/outline';
+import moment from 'moment';
+import { useEffect, useMemo, useState } from 'react';
+import Moment from 'react-moment';
 
-import { network } from "../../config";
-import { useTransaction } from "../../hooks/useTransaction";
-import { IStreamResponse } from "../../types";
-import StreamingContract from "../../utils/contracts/streamContract";
-import { denominate } from "../../utils/economics";
-import { formatNumber, getAmountStreamed, getClaimedAmount, getDepositAmount } from "../../utils/presentation";
-import StreamDetailsBasePopup from "./PopupBase";
-import StreamPropItem from "./StreamPropItem";
+import { network } from '../../config';
+import { useTransaction } from '../../hooks/useTransaction';
+import { IStreamResponse } from '../../types';
+import StreamingContract from '../../utils/contracts/streamContract';
+import { denominate } from '../../utils/economics';
+import { formatNumber, getAmountStreamed, getClaimedAmount, getDepositAmount } from '../../utils/presentation';
+import AggregatorTokenSelect from './AggregatorTokenSelect';
+import StreamDetailsBasePopup from './PopupBase';
+import StreamPropItem from './StreamPropItem';
 
 interface ClaimPopupProps {
   data: IStreamResponse;
@@ -31,11 +25,21 @@ export default function ClaimPopup({ data, open, onClose, streamRecipient }: Cla
   const { address } = useAuth();
   const { makeTransaction } = useTransaction();
   const [loading, setLoading] = useState(false);
+  const [claimToken, setClaimToken] = useState<string | null>();
 
   const onSubmit = async () => {
     if (!address) return;
     const streamingContract = new StreamingContract(address);
-    const interaction = streamingContract.claimStream(data.id);
+    let interaction = streamingContract.claimStream(data.id);
+
+    if (claimToken) {
+      interaction = await streamingContract.claimStreamSwap(
+        data.id,
+        data.stream.payment.token_identifier,
+        claimToken,
+        data.stream.balance?.recipient_balance!
+      );
+    }
 
     try {
       setLoading(true);
@@ -141,6 +145,8 @@ export default function ClaimPopup({ data, open, onClose, streamRecipient }: Cla
             </p>
           </div>
         )}
+
+        <AggregatorTokenSelect defaultToken={data.stream.payment.token_identifier} onSelect={setClaimToken} />
       </div>
     </StreamDetailsBasePopup>
   );

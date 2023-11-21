@@ -88,7 +88,7 @@ const Home: NextPage = () => {
         segments = new Segments({
           duration: formData.duration,
           amount: amountBigNumber.toString(),
-          exponent: 1,
+          exponent: isExponentialType ? 3 : 1,
         });
       }
 
@@ -123,7 +123,11 @@ const Home: NextPage = () => {
   };
 
   const isCliffType = useMemo(() => {
-    return streamType?.id === StreamType.CliffLinear;
+    return streamType?.id === StreamType.CliffLinear || streamType?.id === StreamType.CliffExponential;
+  }, [streamType?.id]);
+
+  const isExponentialType = useMemo(() => {
+    return streamType?.id === StreamType.Exponential || streamType?.id === StreamType.CliffExponential;
   }, [streamType?.id]);
 
   const isStepsType = useMemo(() => {

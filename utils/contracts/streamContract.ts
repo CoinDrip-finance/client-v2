@@ -1,10 +1,12 @@
-import { Address, BooleanValue, TokenTransfer, U64Value } from "@multiversx/sdk-core/out";
+import { Aggregator } from '@ashswap/ash-sdk-js/out';
+import { Address, BigUIntValue, BooleanValue, TokenTransfer, U64Value } from '@multiversx/sdk-core/out';
+import BigNumber from 'bignumber.js';
 
-import { contractAddress, streamsNftCollection } from "../../config";
-import { CreateStreamPayment } from "../../types";
-import coindripAbi from "../coindrip.abi.json";
-import { Segments } from "../models/Segments";
-import Contract from "./contract";
+import { chainId, contractAddress, streamsNftCollection } from '../../config';
+import { CreateStreamPayment } from '../../types';
+import coindripAbi from '../coindrip.abi.json';
+import { Segments } from '../models/Segments';
+import Contract from './contract';
 
 class StreamingContract extends Contract<typeof coindripAbi> {
   sender?: Address;
@@ -64,6 +66,27 @@ class StreamingContract extends Contract<typeof coindripAbi> {
       .withSender(this.sender);
 
     return this.interceptInteraction(interaction, 50_000_000);
+  }
+
+  async claimStreamSwap(streamId: number, fromToken: string, toToken: string, amount: string) {
+    if (!this.sender) throw Error("No sender set in the constructor");
+    // @ts-ignore
+    const agService = new Aggregator({ chainId });
+    const exchangeAmount = new BigNumber(amount);
+    const ashInteraction = await agService.aggregate(fromToken, toToken, exchangeAmount.toNumber(), 500);
+
+    const params = [
+      new U64Value(streamId),
+      new BigUIntValue(exchangeAmount),
+      ...ashInteraction.getArguments().slice(0, 2),
+    ];
+
+    const interaction = this.contract.methods
+      .claimFromStreamSwap(params)
+      .withSingleESDTNFTTransfer(TokenTransfer.nonFungible(streamsNftCollection, streamId))
+      .withSender(this.sender);
+
+    return this.interceptInteraction(interaction, 100_000_000);
   }
 
   cancelStream(streamId: number, withNftTransfer = false) {

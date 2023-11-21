@@ -1,11 +1,11 @@
-import { AcademicCapIcon } from "@heroicons/react/24/outline";
-import { NextSeo } from "next-seo";
+import { AcademicCapIcon } from '@heroicons/react/24/outline';
+import { NextSeo } from 'next-seo';
 
-import StreamTypeItem, { StreamItemType } from "../components/gallery/StreamTypeItem";
-import BackButtonWrapper from "../components/shared/BackWrapper";
-import Layout from "../components/shared/Layout";
-import { StreamType } from "../types";
-import { homePath } from "../utils/routes";
+import StreamTypeItem, { StreamItemType } from '../components/gallery/StreamTypeItem';
+import BackButtonWrapper from '../components/shared/BackWrapper';
+import Layout from '../components/shared/Layout';
+import { StreamType } from '../types';
+import { homePath } from '../utils/routes';
 
 export const streamTypes: StreamItemType[] = [
   { id: StreamType.Linear, title: "Linear", description: "Send assets at a constant rate/second" },
@@ -24,13 +24,13 @@ export const streamTypes: StreamItemType[] = [
     id: StreamType.Exponential,
     title: "Exponential",
     description: "Just like Linear stream but with a cliff period",
-    locked: true,
+    locked: false,
   },
   {
     id: StreamType.CliffExponential,
     title: "Exponential with cliff",
     description: "Just like Linear stream but with a cliff period",
-    locked: true,
+    locked: false,
   },
 ];
 
